@@ -1,0 +1,97 @@
+{
+  "name": "sweepy",
+  "version": "1.0.0",
+  "description": "CLI tool to find unused JS/TS modules, CSS/SCSS stylesheets, and orphaned assets like PNG/JPG/SVG in your project. Helps keep your codebase clean and optimized.",
+  "bin": {
+    "sweepy": "./index.js"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "files": ["src", "README.md"],
+  "keywords": [
+    "cli",
+    "cli-tool",
+    "code-cleaner",
+    "codebase-cleaner",
+    "dead-code",
+    "dead-code-removal",
+    "unused-files",
+    "unused-modules",
+    "orphaned-assets",
+    "orphaned-files",
+    "js-unused",
+    "css-unused",
+    "asset-cleanup",
+    "static-assets",
+    "typescript",
+    "javascript",
+    "scss",
+    "css",
+    "svg",
+    "jpg",
+    "png",
+    "jpeg",
+    "media-detector",
+    "codebase-optimizer",
+    "import-graph",
+    "dynamic-import",
+    "require-tracker",
+    "tree-shaking",
+    "modularization",
+    "linting",
+    "devtools",
+    "frontend-tools",
+    "developer-cli",
+    "dependency-visualizer",
+    "code-quality",
+    "modern-tooling",
+    "esbuild",
+    "vite",
+    "rollup",
+    "webpack",
+    "project-audit",
+    "file-analyzer",
+    "build-optimizer",
+    "automation",
+    "clean-architecture",
+    "refactor-tools",
+    "zero-dependency-cleaner",
+    "maintenance-tool",
+    "unused-cleanup",
+    "build-artifacts",
+    "code-debloat"
+  ],
+  "author": "anthonyhalim150",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthonyhalim150/sweepy"
+  },
+  "bugs": {
+    "url": "https://github.com/anthonyhalim150/sweepy/issues"
+  },
+  "homepage": "https://github.com/anthonyhalim150/sweepy#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.27.0",
+    "@babel/traverse": "^7.27.0",
+    "chalk": "^5.4.1",
+    "globby": "^13.2.2",
+    "inquirer": "^12.5.2"
+  },
+  "sweepy": {
+    "ignore": [
+      "dist/**",
+      "build/**",
+      "*.test.*"
+    ],
+    "output": "json",
+    "types": [
+      "js",
+      "css",
+      "assets"
+    ]
+  }
+}

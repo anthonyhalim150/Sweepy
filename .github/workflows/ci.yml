@@ -1,0 +1,30 @@
+name: Sweepy CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sweepy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Sweepy dry run
+        run: npx sweepy --dry-run --json
+
+      - name: Fail if unused files exist
+        run: |
+          OUTPUT=$(npx sweepy --json --dry-run)
+          echo "$OUTPUT"
+          echo "$OUTPUT" | grep -q '"unused' && exit 1 || exit 0

@@ -1,0 +1,11 @@
+{
+    "ignore": [
+      "node_modules/**",
+      "tests/**",
+      "**/*.spec.ts",
+      "**/*.mock.ts"
+    ],
+    "output": "json",
+    "types": ["js", "css", "assets"]
+  }
+  
