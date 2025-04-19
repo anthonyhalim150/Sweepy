@@ -9,6 +9,7 @@ on:
 jobs:
   sweepy-check:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
@@ -21,10 +22,18 @@ jobs:
         run: npm ci
 
       - name: Run Sweepy dry run
-        run: npx sweepy --dry-run --json
+        run: node index.js --dry-run --json
 
       - name: Fail if unused files exist
         run: |
-          OUTPUT=$(npx sweepy --json --dry-run)
+          OUTPUT=$(node index.js --dry-run --json)
           echo "$OUTPUT"
-          echo "$OUTPUT" | grep -q '"unused' && exit 1 || exit 0
+
+          UNUSED_COUNT=$(echo "$OUTPUT" | grep -o '\[\]' | wc -l)
+          if [ "$UNUSED_COUNT" -lt 3 ]; then
+            echo "❌ Unused files detected"
+            exit 1
+          else
+            echo "✅ No unused files"
+            exit 0
+          fi

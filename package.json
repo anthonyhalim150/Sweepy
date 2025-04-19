@@ -1,13 +1,16 @@
 {
   "name": "sweepy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool to find unused JS/TS modules, CSS/SCSS stylesheets, and orphaned assets like PNG/JPG/SVG in your project. Helps keep your codebase clean and optimized.",
   "bin": {
     "sweepy": "./index.js"
   },
   "type": "module",
   "main": "./index.js",
-  "files": ["src", "README.md"],
+  "files": [
+    "src",
+    "README.md"
+  ],
   "keywords": [
     "cli",
     "cli-tool",
@@ -78,6 +81,7 @@
     "@babel/parser": "^7.27.0",
     "@babel/traverse": "^7.27.0",
     "chalk": "^5.4.1",
+    "commander": "^13.1.0",
     "globby": "^13.2.2",
     "inquirer": "^12.5.2"
   },
@@ -93,5 +97,11 @@
       "css",
       "assets"
     ]
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^3.1.1"
   }
 }

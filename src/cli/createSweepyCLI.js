@@ -16,7 +16,7 @@ export function createSweepyCLI() {
 :╚════██║██║███╗██║██╔══╝  ██╔══╝  ██╔═══╝   ╚██╔╝  :
 :███████║╚███╔███╔╝███████╗███████╗██║        ██║   :
 :╚══════╝ ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝        ╚═╝   :
-····················································· v1.0.0
+····················································· v1.0.1
     `) + '\n' + chalk.gray('Find and remove unused JS, CSS, and media files. Keep it clean.\n'))
 
   program.showHelpAfterError('(use --help to see available options)');
