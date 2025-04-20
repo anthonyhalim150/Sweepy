@@ -4,6 +4,8 @@ import { traceBinImports } from '../utils/traceBinImports.js';
 
 export function loadConfig(cwd, cliIgnore = []) {
   const normalize = (p) => p.replace(/\\/g, '/');
+
+
   const ignore = new Set(['node_modules/**', ...cliIgnore.map(normalize)]);
 
   const ignorePath = path.join(cwd, '.sweepyignore');
@@ -20,14 +22,21 @@ export function loadConfig(cwd, cliIgnore = []) {
     try {
       const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 
+     
       if (pkg.sweepy?.ignore) {
         pkg.sweepy.ignore.forEach(p => ignore.add(normalize(p)));
       }
 
-      if (pkg.bin?.sweepy) {
-        const entry = path.resolve(cwd, pkg.bin.sweepy);
-        const traced = traceBinImports(entry);
-        traced.forEach(f => ignore.add(normalize(f)));
+  
+      if (pkg.bin) {
+        const binPaths = typeof pkg.bin === 'string'
+          ? [pkg.bin]
+          : Object.values(pkg.bin);
+        binPaths.forEach(binRelPath => {
+          const entry = path.resolve(cwd, binRelPath);
+          const traced = traceBinImports(entry);
+          traced.forEach(f => ignore.add(normalize(f)));
+        });
       }
 
     } catch (e) {

@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
-import { execSync } from 'child_process'
 import { loadSweepyRcConfig } from '../config/rcConfig.js'
 import { loadConfig } from '../config/config.js'
 import { findUnusedFiles } from '../core/detector.js'
@@ -10,12 +9,10 @@ import { printReport, printJsonReport } from '../reporters/consoleReporter.js'
 import { generateHtmlReport } from '../reporters/htmlReporter.js'
 import { promptFileDeletion } from './prompts.js'
 import { moveToTrash } from '../utils/moveToTrash.js'
-import { generateSweepyIgnore } from '../utils/generateIgnoreFile.js'
 import { writeSweepyConfigToPackage } from '../utils/writePackageSweepyConfig.js'
 import { pruneSweepyTrash } from '../utils/pruneTrash.js'
 import { getChangedFilesSinceCommit } from '../utils/getChangedFilesSinceCommit.js'
 import { recoverFile, recoverAll, recoverInteractive } from '../utils/recoverFromTrash.js'
-
 
 export async function runSweepy(options, cwd) {
   if (typeof options.export === 'string' && !/\.[a-z0-9]+$/i.test(options.export)) {
@@ -54,11 +51,11 @@ export async function runSweepy(options, cwd) {
     await recoverInteractive()
     return
   }
+
   if (options.since === true) {
     console.log(chalk.red('\n⚠️  --since requires a Git commit or ref (e.g. HEAD~5 or 57e4323...)'))
     return
   }
-  
 
   if (typeof options.recover === 'string') {
     recoverFile(options.recover)
@@ -78,24 +75,20 @@ export async function runSweepy(options, cwd) {
   if (options.verbose) {
     console.log(chalk.gray('🔍 Scanning project in:'), cwd)
   }
-  if (options.generateIgnore) {
-    generateSweepyIgnore(cwd)
-    return
-  }
+
+
   if (options.init) {
     writeSweepyConfigToPackage(cwd)
     return
   }
+
   if (options.printConfig) {
     const rcConfig = loadSweepyRcConfig(cwd)
     const config = loadConfig(cwd, [...(options.ignore || []), ...(rcConfig.ignore || [])])
-  
     console.log(chalk.cyan('\n🔧 Sweepy Resolved Config:'))
     console.log(JSON.stringify(config, null, 2))
     return
-  }  
-  
-  
+  }
 
   const rcConfig = loadSweepyRcConfig(cwd)
   const config = loadConfig(cwd, [...(options.ignore || []), ...(rcConfig.ignore || [])])
@@ -125,6 +118,7 @@ export async function runSweepy(options, cwd) {
   } else {
     printReport(filteredResult)
   }
+
 
   if (options.htmlReport) {
     generateHtmlReport(filteredResult)
@@ -160,23 +154,19 @@ export async function runSweepy(options, cwd) {
 
   if (options.interactive && options.delete) {
     const selected = await promptFileDeletion(allFiles)
-
     if (!selected.length) {
       console.log(chalk.gray('\nNo files selected.'))
       return
     }
-
     if (options.dryRun) {
       console.log(chalk.cyan('\n💡 Dry run enabled — selected files would be deleted:'))
       selected.forEach(f => console.log('  •', f))
       return
     }
-
     for (const file of selected) {
       moveToTrash(file)
       console.log(chalk.red('🗑️ Moved to trash:'), file)
     }
-
     return
   }
 
@@ -186,7 +176,6 @@ export async function runSweepy(options, cwd) {
       allFiles.forEach(f => console.log('  •', f))
       return
     }
-
     for (const file of allFiles) {
       moveToTrash(file)
       console.log(chalk.red('🗑️ Moved to trash:'), file)

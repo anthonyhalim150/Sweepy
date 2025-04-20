@@ -11,17 +11,49 @@ export function writeSweepyConfigToPackage(cwd = process.cwd()) {
   const raw = fs.readFileSync(pkgPath, 'utf-8')
   const pkg = JSON.parse(raw)
 
-  if (pkg.sweepy) {
-    console.log('⚠️  sweepy config already exists in package.json')
-    return
-  }
 
   pkg.sweepy = {
-    ignore: ['dist/**', 'build/**', '*.test.*'],
+    ignore: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/coverage/**',
+      '**/.next/**',
+      '**/.vercel/**',
+      '**/.turbo/**',
+      '**/.parcel-cache/**',
+      '**/.cache/**',
+      '**/.vite/**',
+      '.sweepy-trash/**',
+      '**/test/**',
+      '**/tests/**',
+      '**/__tests__/**',
+      '**/__mocks__/**',
+      '**/*.spec.*',
+      '**/*.test.*',
+      '**/*.snap',
+      '**/*.log',
+      '**/*.tmp',
+      '**/.sweepy-report.*',
+      '**/package-lock.json',
+      '**/pnpm-lock.yaml',
+      '**/yarn.lock',
+      '**/cypress/**',
+      '**/playwright/**',
+      '**/.eslintcache',
+      '**/.stylelintcache',
+      '**/.DS_Store',
+      '**/Thumbs.db',
+      'scripts/init-sweepy.js'
+    ],
     output: 'json',
-    types: ['js', 'css', 'assets']
+    types: ['js', 'css', 'assets'],
+    customAliases: {
+      '@components': 'src/components',
+      '@utils': 'src/utils'
+    }
   }
 
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
-  console.log('✅ sweepy config block added to package.json')
+  console.log('✅ sweepy config block with full ignore and customAliases added to package.json')
 }

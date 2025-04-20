@@ -30,9 +30,8 @@ program
   .option('--recover [file]', 'Recover a specific file from trash or use with --interactive')
   .option('--recover-all', 'Recover all files from trash')
   .option('--since [commit]', 'Only scan files changed since the given Git commit (e.g. HEAD~5, hash)')
-  .option('--print-config', 'Print resolved configuration from CLI, .sweepyignore, and package.json')
-  .option('--generate-ignore', 'Create a default .sweepyignore file')
-  .option('--init', 'Write default sweepy config into package.json')
+  .option('--print-config', 'Print resolved configuration from CLI and package.json')
+  .option('--init', 'Write default sweepy config, such as ignoring node modules and build folders, into package.json')
 
 
 
