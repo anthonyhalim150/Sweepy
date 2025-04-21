@@ -43,8 +43,7 @@ export function writeSweepyConfigToPackage(cwd = process.cwd()) {
       '**/.eslintcache',
       '**/.stylelintcache',
       '**/.DS_Store',
-      '**/Thumbs.db',
-      'scripts/init-sweepy.js'
+      '**/Thumbs.db'
     ],
     output: 'json',
     types: ['js', 'css', 'assets'],

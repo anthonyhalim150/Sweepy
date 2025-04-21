@@ -1,18 +1,17 @@
 {
   "name": "sweepy",
-  "version": "1.0.5",
-  "description": "CLI tool to find unused JS/TS modules, CSS/SCSS stylesheets, and orphaned assets like PNG/JPG/SVG in your project. Helps keep your codebase clean and optimized.",
+  "version": "1.1.0",
+  "description": "AST-powered CLI to detect and clean unused JS/TS modules, CSS/SCSS stylesheets, selectors, exports, .env keys, and orphaned assets like PNG/JPG/SVG. Keep your codebase clean and optimized.",
   "bin": {
     "sweepy": "./index.js"
   },
   "type": "module",
   "main": "./index.js",
   "files": [
-  "index.js",
-  "src",
-  "scripts/init-sweepy.js",
-  "README.md",
-  "LICENSE"
+    "index.js",
+    "src",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "cli",
@@ -92,11 +91,12 @@
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "globby": "^13.2.2",
-    "inquirer": "^12.5.2"
+    "inquirer": "^12.5.2",
+    "postcss": "^8.5.3",
+    "postcss-selector-parser": "^7.1.0"
   },
   "scripts": {
-    "test": "vitest run",
-    "postinstall": "node ./scripts/init-sweepy.js"
+    "test": "vitest run"
   },
   "devDependencies": {
     "vitest": "^3.1.1"
@@ -132,8 +132,7 @@
       "**/.eslintcache",
       "**/.stylelintcache",
       "**/.DS_Store",
-      "**/Thumbs.db",
-      "scripts/init-sweepy.js"
+      "**/Thumbs.db"
     ],
     "output": "json",
     "types": [

@@ -2,53 +2,21 @@ import chalk from 'chalk'
 
 export function handleInlineHelp(argv) {
   const [first, second] = argv
-
   const isHelp = (val) => val === '-h' || val === '--help'
 
-  if (first === '--only' && isHelp(second)) {
-    printOnlyHelp()
-    process.exit(0)
-  }
-  if (first === '--since' && isHelp(second)) {
-    printSinceHelp()
-    process.exit(0)
-  }
-  
-
-  if (first === '--delete' && isHelp(second)) {
-    printDeleteHelp()
-    process.exit(0)
-  }
-
-  if (first === '--recover' && isHelp(second)) {
-    printRecoverHelp()
-    process.exit(0)
-  }
-
-  if (first === '--recover-all' && isHelp(second)) {
-    printRecoverHelp()
-    process.exit(0)
-  }
-
-  if (first === '--export' && isHelp(second)) {
-    printExportHelp()
-    process.exit(0)
-  }
-
-  if (first === '--html-report' && isHelp(second)) {
-    printHtmlReportHelp()
-    process.exit(0)
-  }
-
-  if (first === '--prune-trash' && isHelp(second)) {
-    printPruneTrashHelp()
-    process.exit(0)
-  }
-
-  if (first === '--interactive' && isHelp(second)) {
-    printInteractiveHelp()
-    process.exit(0)
-  }
+  if (first === '--only' && isHelp(second)) printOnlyHelp()
+  if (first === '--since' && isHelp(second)) printSinceHelp()
+  if (first === '--delete' && isHelp(second)) printDeleteHelp()
+  if (first === '--recover' && isHelp(second)) printRecoverHelp()
+  if (first === '--recover-all' && isHelp(second)) printRecoverHelp()
+  if (first === '--export' && isHelp(second)) printExportHelp()
+  if (first === '--html-report' && isHelp(second)) printHtmlReportHelp()
+  if (first === '--prune-trash' && isHelp(second)) printPruneTrashHelp()
+  if (first === '--interactive' && isHelp(second)) printInteractiveHelp()
+  if ((first === '--ignore' || first === '-i') && isHelp(second)) printIgnoreHelp()
+  if (first === '--detect' && isHelp(second)) printDetectHelp()
+  if ((first === '--ignore' || first === '-i') && !second) {printIgnoreHelp()}
+  if (first === '--detect' && !second) {printDetectHelp()}    
 }
 
 function printOnlyHelp() {
@@ -57,15 +25,16 @@ function printOnlyHelp() {
 
 Limit scan to specific file types:
 
-  js      JavaScript and TypeScript files (.js, .ts, .jsx, .tsx)
-  css     CSS and SCSS stylesheets (.css, .scss)
-  assets  Static media assets (.png, .jpg, .svg, .webp, etc.)
+  js      → JavaScript and TypeScript files (.js, .ts, .jsx, .tsx)
+  css     → CSS and SCSS stylesheets (.css, .scss)
+  assets  → Static media assets (.png, .jpg, .svg, .webp, etc.)
 
 Examples:
   $ sweepy --only js
   $ sweepy --only js css
   $ sweepy --only assets --html-report
 `)
+  process.exit(0)
 }
 
 function printDeleteHelp() {
@@ -86,6 +55,7 @@ Preview only:
   $ sweepy --delete --dry-run
   Shows which files would be deleted, but takes no action.
 `)
+  process.exit(0)
 }
 
 function printRecoverHelp() {
@@ -104,6 +74,7 @@ Modes:
   $ sweepy --recover-all
     Restores all previously deleted files.
 `)
+  process.exit(0)
 }
 
 function printExportHelp() {
@@ -120,6 +91,7 @@ Examples:
   $ sweepy --export unused.txt
   $ sweepy --export report.json
 `)
+  process.exit(0)
 }
 
 function printHtmlReportHelp() {
@@ -137,6 +109,7 @@ Useful for:
 Example:
   $ sweepy --html-report --only assets
 `)
+  process.exit(0)
 }
 
 function printPruneTrashHelp() {
@@ -150,6 +123,7 @@ Use this after you've confirmed nothing in the trash is needed.
 Example:
   $ sweepy --prune-trash
 `)
+  process.exit(0)
 }
 
 function printInteractiveHelp() {
@@ -166,22 +140,62 @@ Examples:
   $ sweepy --delete --interactive
   $ sweepy --recover --interactive
 `)
+  process.exit(0)
 }
 
 function printSinceHelp() {
-    console.log(`
-  --since <commit>
-  
-  Limits the scan to files changed since a specific Git commit.
-  
-  Useful for:
-    - PR diff scanning
-    - CI optimizations
-    - Partial audits
-  
-  Examples:
-    $ sweepy --since HEAD~5
-    $ sweepy --since 72c1f7d --only js css
-  `)
-  }
-  
+  console.log(`
+--since <commit>
+
+Limits the scan to files changed since a specific Git commit.
+
+Useful for:
+  - PR diff scanning
+  - CI optimizations
+  - Partial audits
+
+Examples:
+  $ sweepy --since HEAD~5
+  $ sweepy --since 72c1f7d --only js css
+`)
+  process.exit(0)
+}
+
+function printIgnoreHelp() {
+  console.log(`
+--ignore <patterns...>
+
+Glob patterns for files or folders to exclude from scanning.
+
+You can add ignore patterns in .sweepyrc.json or package.json > sweepy.ignore (e.g. src/generated, **/components/**).
+
+Default config in package.json can be generated with:
+  $ sweepy --init
+
+Examples:
+  $ sweepy --ignore "**/node_modules/**" "**/*.test.js"
+  $ sweepy --ignore "src/generated/**"
+`)
+  process.exit(0)
+}
+
+function printDetectHelp() {
+  console.log(`
+--detect <types...>
+
+Choose specific detection categories to run:
+
+  js       → Unused JS/TS modules
+  css      → Unused CSS/SCSS files and selectors
+  assets   → Unused media assets (.png, .svg, etc.)
+  exports  → Unused exported symbols in modules
+  env      → Unused .env keys
+
+By default, Sweepy runs all detectors.
+
+Examples:
+  $ sweepy --detect js css
+  $ sweepy --detect env exports
+`)
+  process.exit(0)
+}

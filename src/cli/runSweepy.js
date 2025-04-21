@@ -108,8 +108,10 @@ export async function runSweepy(options, cwd) {
     cwd,
     config.ignore,
     options.verbose,
-    changedFiles
+    changedFiles,
+    options.detect
   )
+  
 
   const filteredResult = onlyTypes.length > 0 ? filterByTypes(result, onlyTypes) : result
 

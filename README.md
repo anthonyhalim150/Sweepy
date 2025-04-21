@@ -1,8 +1,17 @@
 # 🧹 Sweepy
 
-> Find and eliminate unused files and exports in your codebase — JS/TS modules, CSS/SCSS stylesheets, export functions and orphaned assets.
+> Detect and eliminate dead code across your codebase — including unused modules, stylesheets, selectors, exports, media assets, and environment variables.
 
-Sweepy is a blazing-fast, AST-powered CLI tool that helps developers maintain a **clean, optimized, and dead-code-free codebase**. It scans JavaScript/TypeScript projects and flags unused files, unused exports, and unreferenced static assets. Designed for teams, CI/CD pipelines, and OSS maintainers.
+**Sweepy** is an all-in-one, AST-powered CLI tool for eliminating dead code. It helps you find:
+
+- Unused JavaScript, TypeScript, CSS, and SCSS files
+- Unused class and ID selectors in stylesheets
+- Unused `.env` variables
+- Orphaned image/media assets (PNG, JPG, SVG, WebP)
+- Unreferenced exports and JSX components
+- Dynamically loaded files and runtime imports
+
+Sweepy is built for developers, teams, CI pipelines, and open-source maintainers who want to keep projects clean and efficient.
 
 [![npm version](https://img.shields.io/npm/v/sweepy)](https://www.npmjs.com/package/sweepy)
 [![npm downloads](https://img.shields.io/npm/dm/sweepy)](https://www.npmjs.com/package/sweepy)
@@ -16,19 +25,18 @@ Sweepy is a blazing-fast, AST-powered CLI tool that helps developers maintain a 
 ## ✨ Features
 
 - 🔍 Detect unused `.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, and image assets
+- 🔒 Detect unused `.env` keys
 - 🧼 **Auto-clean support** – Easily clean all unused files with --delete --confirm
 - 🧠 AST-based import and export graph analysis (static + dynamic)
 - 📦 Export symbol usage tracking (`export const`, `export default`)
 - 🎯 JSX component reference detection (`<MyComponent />`)
+- 🎨 Unused CSS selector detection (class, ID, HTML tags)
 - 🧱 Alias resolution (Webpack, Vite, Babel, custom)
 - 🗂 Config support via CLI or `package.json`
 - ♻️ Safe deletion to `.sweepy-trash/` with full recovery
 - 📤 Export results as JSON, TXT, or styled HTML reports
 - 🔁 Git integration with `--since` for incremental scans
 - ⚙️ CI-friendly output (dry-run, headless, JSON)
-
----
-
 
 ---
 
@@ -40,18 +48,17 @@ Sweepy is ready to use immediately — no setup required.
 npx sweepy
 ```
 
-IMPORANT: However, for custom behavior, you can generate a config block automatically:
+To customize behavior:
 
 ```bash
 sweepy --init
 ```
 
-This adds a `"sweepy"` block to your `package.json` with sensible defaults:
-- Ignores node modules, build, test, and lock files
-- Supports alias resolution
-- Enables safe deletion and reporting
+Adds a `"sweepy"` block to `package.json` with defaults like:
 
-Alternatively, if you install Sweepy via `npm install`, it will auto-create a default `"sweepy"` config block in your `package.json`.
+- Ignore patterns for node_modules, build/test output
+- Alias resolution
+- Deletion safety features
 
 ---
 
@@ -67,12 +74,14 @@ Alternatively, if you install Sweepy via `npm install`, it will auto-create a de
 | Safe deletion & recovery      | ✅         | ❌        | ❌          |
 | Custom alias resolution       | ✅         | ⚠️ Partial | ⚠️ Partial |
 | CI-friendly dry-run mode      | ✅         | ⚠️        | ❌          |
+| Unused .env key detection     | ✅         | ❌        | ❌          |
+| Unused CSS selectors          | ✅         | ❌        | ❌          |
 
-Sweepy goes beyond surface-level linting to offer deep AST scanning, JSX awareness, and Git diff integration — all while giving you full control and safety.
+---
 
 ## 📦 Installation
 
-### Global (recommended)
+### Global
 ```bash
 npm install -g sweepy
 ```
@@ -97,6 +106,7 @@ sweepy --only js css              # Scan JS and CSS only
 sweepy --delete --interactive     # Interactive file deletion
 sweepy --export report.txt        # Export results to text file
 sweepy --html-report              # Generate HTML report
+sweepy --detect env exports       # Detect only env and exports
 ```
 
 ---
@@ -106,11 +116,12 @@ sweepy --html-report              # Generate HTML report
 | Option                | Description |
 |-----------------------|-------------|
 | `--only`              | Filter scan to `js`, `css`, `assets` |
+| `--detect`            | Choose detection types: js, css, assets, exports, env |
 | `--delete`            | Delete unused files |
 | `--confirm`           | Delete without confirmation |
 | `--interactive`       | Select files to delete or recover |
 | `--dry-run`           | Simulate deletion (safe preview) |
-| `--export <file>`     | Export unused list to `.txt` or `.json` |
+| `--export <file>`     | Export results to `.txt` or `.json` |
 | `--html-report`       | Generate styled HTML report |
 | `--recover [file]`    | Recover a specific file |
 | `--recover-all`       | Recover everything from trash |
@@ -124,29 +135,27 @@ sweepy --html-report              # Generate HTML report
 
 ## 🧠 Export Symbol Detection
 
-Sweepy detects unused named and default exports:
-
 ```js
-export const unused = () => {}      // flagged if unused
-export default UnusedComponent      // flagged if unused
+export const unused = () => {}
+export default UnusedComponent
 ```
 
-Also tracks JSX usage like:
+Sweepy will flag both if unused.
 
-```js
-<MyComponent />                     // resolved to `MyComponent.jsx`
+JSX detection:
+
+```jsx
+<MyComponent />  // matched to MyComponent.jsx or similar
 ```
 
 ---
 
 ## 🧩 Config Support
 
-Sweepy merges configuration from:
+Sweepy config merges from:
 
-1. CLI flags (highest priority)
-2. `package.json > "sweepy"` block
-
-### `package.json` example:
+1. CLI flags
+2. `package.json > sweepy`
 
 ```json
 "sweepy": {
@@ -159,21 +168,14 @@ Sweepy merges configuration from:
 }
 ```
 
-Initialize it with:
-```bash
-sweepy --init
-```
-
 ---
 
 ## ♻️ Safe Deletion & Recovery
 
-All deleted files are moved to `.sweepy-trash/`.
-
 ```bash
-sweepy --recover file.js         # Recover one file
-sweepy --recover-all             # Recover everything
-sweepy --prune-trash             # Delete trash permanently
+sweepy --recover file.js  #Recover one file
+sweepy --recover-all      #Recover everything
+sweepy --prune-trash      #Delete trash permanently
 ```
 
 ---
@@ -184,7 +186,7 @@ sweepy --prune-trash             # Delete trash permanently
 sweepy --html-report
 ```
 
-Generates a rich visual report at `sweepy-report.html`.
+Generates a rich, visual report at `sweepy-report.html`.
 
 ---
 
@@ -193,10 +195,6 @@ Generates a rich visual report at `sweepy-report.html`.
 ```bash
 sweepy --since HEAD~5 --only js css --dry-run --json
 ```
-
-✅ Detect regressions  
-✅ Fail builds with unclean diffs  
-✅ Machine-readable output
 
 ---
 

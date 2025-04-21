@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 export function generateHtmlReport(result, outputPath = 'sweepy-report.html') {
-  const { unusedJS, unusedCSS, unusedAssets, unusedExports } = result
+  const { unusedJS, unusedCSS, unusedAssets, unusedExports, unusedCssSelectors, unusedEnv } = result
 
   const html = `
 <!DOCTYPE html>
@@ -44,9 +44,22 @@ export function generateHtmlReport(result, outputPath = 'sweepy-report.html') {
     ).join('')}
   </ul>
 
+  <h2>🎯 Unused CSS Selectors</h2>
+  <ul>
+    ${Object.entries(unusedCssSelectors || {}).map(([file, selectors]) =>
+      selectors.length
+        ? `<li><strong>${file}</strong><ul>${selectors.map(s => `<li>${s}</li>`).join('')}</ul></li>`
+        : ''
+    ).join('')}
+  </ul>
+
+  <h2>🔐 Unused .env Keys</h2>
+  <ul>
+    ${(unusedEnv?.unused || []).map(k => `<li>${k}</li>`).join('')}
+  </ul>
 </body>
 </html>
-  `;
+  `
 
-  fs.writeFileSync(path.resolve(outputPath), html, 'utf-8');
+  fs.writeFileSync(path.resolve(outputPath), html, 'utf-8')
 }

@@ -6,16 +6,8 @@ export function loadConfig(cwd, cliIgnore = []) {
   const normalize = (p) => p.replace(/\\/g, '/');
 
 
-  const ignore = new Set(['node_modules/**', ...cliIgnore.map(normalize)]);
+  const ignore = new Set(['**/node_modules/**', ...cliIgnore.map(normalize)]);
 
-  const ignorePath = path.join(cwd, '.sweepyignore');
-  if (fs.existsSync(ignorePath)) {
-    const lines = fs.readFileSync(ignorePath, 'utf-8')
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && !line.startsWith('#'));
-    lines.forEach(p => ignore.add(normalize(p)));
-  }
 
   const pkgPath = path.join(cwd, 'package.json');
   if (fs.existsSync(pkgPath)) {
