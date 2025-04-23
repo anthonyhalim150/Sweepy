@@ -1,5 +1,3 @@
-import chalk from 'chalk'
-
 export function handleInlineHelp(argv) {
   const [first, second] = argv
   const isHelp = (val) => val === '-h' || val === '--help'
@@ -190,12 +188,14 @@ Choose specific detection categories to run:
   assets   → Unused media assets (.png, .svg, etc.)
   exports  → Unused exported symbols in modules
   env      → Unused .env keys
+  deps     → Unused or undeclared npm dependencies (from package.json)
 
 By default, Sweepy runs all detectors.
 
 Examples:
   $ sweepy --detect js css
   $ sweepy --detect env exports
-`)
+  $ sweepy --detect deps
+    `)    
   process.exit(0)
 }

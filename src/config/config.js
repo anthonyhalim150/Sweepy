@@ -4,22 +4,22 @@ import { traceBinImports } from '../utils/traceBinImports.js';
 
 export function loadConfig(cwd, cliIgnore = []) {
   const normalize = (p) => p.replace(/\\/g, '/');
-
-
   const ignore = new Set(['**/node_modules/**', ...cliIgnore.map(normalize)]);
-
-
   const pkgPath = path.join(cwd, 'package.json');
+  let customCssSafelist = [];
+
   if (fs.existsSync(pkgPath)) {
     try {
       const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 
-     
       if (pkg.sweepy?.ignore) {
         pkg.sweepy.ignore.forEach(p => ignore.add(normalize(p)));
       }
 
-  
+      if (pkg.sweepy?.customCssSafelist) {
+        customCssSafelist = pkg.sweepy.customCssSafelist;
+      }
+
       if (pkg.bin) {
         const binPaths = typeof pkg.bin === 'string'
           ? [pkg.bin]
@@ -36,5 +36,8 @@ export function loadConfig(cwd, cliIgnore = []) {
     }
   }
 
-  return { ignore: Array.from(ignore) };
+  return {
+    ignore: Array.from(ignore),
+    customCssSafelist
+  };
 }

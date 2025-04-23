@@ -1,15 +1,16 @@
 # 🧹 Sweepy
 
-> Detect and eliminate dead code across your codebase — including unused modules, stylesheets, selectors, exports, media assets, and environment variables.
+> Detect and eliminate dead code and leftover files in your JavaScript, TypeScript, and all your projects — including modules, stylesheets, CSS selectors, package dependencies, exports, media assets, and `.env` keys.
 
 **Sweepy** is an all-in-one, AST-powered CLI tool for eliminating dead code. It helps you find:
 
 - Unused JavaScript, TypeScript, CSS, and SCSS files
-- Unused class and ID selectors in stylesheets
+- Unused class, keyframes, and ID selectors in stylesheets
 - Unused `.env` variables
 - Orphaned image/media assets (PNG, JPG, SVG, WebP)
 - Unreferenced exports and JSX components
 - Dynamically loaded files and runtime imports
+- Unused and undeclared npm dependencies (--detect deps)
 
 Sweepy is built for developers, teams, CI pipelines, and open-source maintainers who want to keep projects clean and efficient.
 
@@ -17,65 +18,9 @@ Sweepy is built for developers, teams, CI pipelines, and open-source maintainers
 [![npm downloads](https://img.shields.io/npm/dm/sweepy)](https://www.npmjs.com/package/sweepy)
 [![MIT License](https://img.shields.io/npm/l/sweepy)](./LICENSE)
 [![Build Status](https://github.com/anthonyhalim150/sweepy/actions/workflows/test.yml/badge.svg)](https://github.com/anthonyhalim150/sweepy/actions)
+[![Codecov Coverage](https://codecov.io/gh/anthonyhalim150/sweepy/branch/main/graph/badge.svg)](https://codecov.io/gh/anthonyhalim150/sweepy)
 [![GitHub issues](https://img.shields.io/github/issues/anthonyhalim150/sweepy)](https://github.com/anthonyhalim150/sweepy/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/anthonyhalim150/sweepy/pulls)
-
----
-
-## ✨ Features
-
-- 🔍 Detect unused `.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, and image assets
-- 🔒 Detect unused `.env` keys
-- 🧼 **Auto-clean support** – Easily clean all unused files with --delete --confirm
-- 🧠 AST-based import and export graph analysis (static + dynamic)
-- 📦 Export symbol usage tracking (`export const`, `export default`)
-- 🎯 JSX component reference detection (`<MyComponent />`)
-- 🎨 Unused CSS selector detection (class, ID, HTML tags)
-- 🧱 Alias resolution (Webpack, Vite, Babel, custom)
-- 🗂 Config support via CLI or `package.json`
-- ♻️ Safe deletion to `.sweepy-trash/` with full recovery
-- 📤 Export results as JSON, TXT, or styled HTML reports
-- 🔁 Git integration with `--since` for incremental scans
-- ⚙️ CI-friendly output (dry-run, headless, JSON)
-
----
-
-## ⚡ Zero-Config Defaults
-
-Sweepy is ready to use immediately — no setup required.
-
-```bash
-npx sweepy
-```
-
-To customize behavior:
-
-```bash
-sweepy --init
-```
-
-Adds a `"sweepy"` block to `package.json` with defaults like:
-
-- Ignore patterns for node_modules, build/test output
-- Alias resolution
-- Deletion safety features
-
----
-
-## 🔍 Why Sweepy?
-
-| Feature                        | 🧹 Sweepy | depcheck | unimported |
-|-------------------------------|-----------|----------|------------|
-| AST-based analysis            | ✅         | ❌        | ❌          |
-| JSX `<Component />` detection | ✅         | ❌        | ❌          |
-| Export symbol analysis        | ✅         | ⚠️ Partial | ❌         |
-| Git-aware scanning            | ✅         | ❌        | ❌          |
-| HTML reports                  | ✅         | ❌        | ❌          |
-| Safe deletion & recovery      | ✅         | ❌        | ❌          |
-| Custom alias resolution       | ✅         | ⚠️ Partial | ⚠️ Partial |
-| CI-friendly dry-run mode      | ✅         | ⚠️        | ❌          |
-| Unused .env key detection     | ✅         | ❌        | ❌          |
-| Unused CSS selectors          | ✅         | ❌        | ❌          |
 
 ---
 
@@ -95,6 +40,83 @@ If installed locally:
 ```bash
 npx sweepy [options]
 ```
+
+Sweepy runs instantly with zero config — just install and run. To customize behavior:
+
+```bash
+sweepy --init
+```
+
+Adds a `"sweepy"` block to `package.json` with defaults like:
+
+- Ignore patterns for node_modules, build/test output
+- Alias resolution
+- Custom CSS safelist
+
+
+---
+
+## 🌟 Like Sweepy?
+
+- ⭐ Star on GitHub
+- 🧠 Share with your team
+- 🐛 Open issues or PRs
+
+Clean code starts with clean files. Keep it Sweepy! 🧹
+
+---
+
+## ✨ Features
+
+- 🔍 Detect unused `.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, and image assets
+- 🔒 Detect unused `.env` keys
+- 🧼 **Auto-clean support** – Easily clean all unused files with --delete --confirm
+- 🧠 AST-based import and export graph analysis (static + dynamic)
+- 📦 Export symbol usage tracking (`export const`, `export default`)
+- 🎯 JSX component reference detection (`<MyComponent />`)
+- 🎨 Unused CSS selector detection (class, keyframes, ID, HTML tags)
+- 📦 Detect unused and undeclared npm dependencies via `--detect deps`
+- 🎨 Support for safelisting CSS selectors with `customCssSafelist` in `package.json` or `.sweepyrc.json`
+- 🧱 Alias resolution (Webpack, Vite, Babel, custom)
+- 🗂 Config support via CLI or `package.json`
+- ♻️ Safe deletion to `.sweepy-trash/` with full recovery
+- 📤 Export results as JSON, TXT, or styled HTML reports
+- 🔁 Git integration with `--since` for incremental scans
+- ⚙️ CI-friendly output (dry-run, headless, JSON)
+
+
+---
+
+## 🧭 What Makes Sweepy Different?
+
+Sweepy doesn’t just check imports—it analyzes ASTs, handles dynamic patterns, integrates with git, and gives you export-level insight with recovery safety. Unlike other tools, it covers your entire project: code, styles, envs, and assets.
+
+---
+
+## 🔍 Why Sweepy?
+
+| Feature                                          | 🧹 Sweepy   | depcheck   | unimported   | PurgeCSS   | ts-prune   | eslint-plugin-unused-imports   |
+|:-------------------------------------------------|:------------|:-----------|:-------------|:-----------|:-----------|:-------------------------------|
+| AST-based import/export analysis                 | ✅          | ❌         | ❌           | ❌         | ✅         | ⚠️ Partial                     |
+| JSX `<Component />` detection                    | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Export symbol usage analysis                     | ✅          | ⚠️ Partial | ❌           | ❌         | ✅         | ✅ (imports only)              |
+| Git-aware scanning (`--since`)                   | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Unused CSS/SCSS selectors                        | ✅          | ❌         | ❌           | ⚠️ Regex   | ❌         | ❌                             |
+| .env key usage detection                         | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| HTML reports                                     | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Safe deletion with recovery                      | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Custom alias resolution (TS/Webpack)             | ✅          | ⚠️ Partial | ⚠️ Partial   | ❌         | ⚠️ Manual  | ⚠️ Partial                     |
+| CI-friendly dry-run mode                         | ✅          | ⚠️         | ❌           | ❌         | ❌         | ✅                             |
+| Dynamic import / `require()` tracking            | ✅          | ❌         | ⚠️ Partial   | ❌         | ❌         | ❌                             |
+| Glob export support (`export *`)                 | ✅          | ❌         | ❌           | ❌         | ✅         | ❌                             |
+| JSX-aware heuristics (`<MyComponent />`)         | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| .scss and CSS Modules support                    | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Handles `classnames`, `clsx`                     | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| Styled HTML + JSON output                        | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+| CLI + `package.json` config support              | ✅          | ❌         | ⚠️ Partial   | ❌         | ❌         | ❌                             |
+| Unused/undeclared dependencies (`--detect deps`) | ✅          | ✅         | ✅           | ❌         | ❌         | ❌                             |
+| CSS selector safelist support                    | ✅          | ❌         | ❌           | ❌         | ❌         | ❌                             |
+
 
 ---
 
@@ -116,7 +138,7 @@ sweepy --detect env exports       # Detect only env and exports
 | Option                | Description |
 |-----------------------|-------------|
 | `--only`              | Filter scan to `js`, `css`, `assets` |
-| `--detect`            | Choose detection types: js, css, assets, exports, env |
+| `--detect`            | Choose detection types: js, css, assets, exports, deps, env |
 | `--delete`            | Delete unused files |
 | `--confirm`           | Delete without confirmation |
 | `--interactive`       | Select files to delete or recover |
@@ -156,15 +178,21 @@ Sweepy config merges from:
 
 1. CLI flags
 2. `package.json > sweepy`
+3. `.sweepyrc.json` (optional)
 
 ```json
 "sweepy": {
   "ignore": ["dist/**", "*.test.*"],
-  "types": ["js", "css", "assets"],
+  "types": ["js", "css", "assets", "deps"],
   "customAliases": {
     "@components": "src/components",
     "@utils": "src/utils"
-  }
+  },
+  "customCssSafelist": [
+    "^\\.active$",
+    "^\\.dark-mode$",
+    "^\\.btn-.*"
+  ]
 }
 ```
 
@@ -231,10 +259,64 @@ jobs:
 
 ---
 
-## 🌟 Like Sweepy?
+## 📈 Changelog
 
-- ⭐ Star on GitHub
-- 🧠 Share with your team
-- 🐛 Open issues or PRs
+Check out the [CHANGELOG.md](https://github.com/anthonyhalim150/sweepy/releases) for version history and release notes.
 
-Clean code starts with clean files. Keep it Sweepy. 🧹
+---
+
+
+## ✅ Tests
+
+Sweepy is tested using [Vitest](https://vitest.dev) to ensure accurate detection and safe cleanup of unused files, selectors, and dependencies.
+
+```bash
+npm test           # Run all tests once
+npm run test:watch # (optional) Watch mode for local development
+```
+
+Test coverage is automatically reported through GitHub Actions and [Codecov](https://codecov.io/gh/anthonyhalim150/sweepy).
+
+---
+
+## 🤝 Contributing
+
+We’d love your help! Whether it’s a tiny typo, a brand‑new feature, or a nasty bug you’ve spotted, every bit counts :D
+
+1. **Fork** this repo and create a branch off **`main`**  
+2. Run `npm install` then `npm test` to make sure everything passes  
+3. Open a pull request with a clear, friendly description of your change  
+
+Sweepy follows **conventional commits** and a clean‑code style.  
+Let's make the code world a little cleaner, together! 🧹✨
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/anthonyhalim150"><img src="https://avatars.githubusercontent.com/u/147601814?v=4?s=32" width="32px;" alt="anthonyhalim150"/><br /><sub><b>anthonyhalim150</b></sub></a><br /><a href="https://github.com/anthonyhalim150/sweepy/commits?author=anthonyhalim150" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td align="center" size="13px" colspan="7">
+        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
+          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
+        </img>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

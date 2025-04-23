@@ -1,105 +1,108 @@
-import fs from 'fs';
-import path from 'path';
-import { parse } from '@babel/parser';
-import traverse from '@babel/traverse';
-
-const { default: babelTraverse } = traverse;
+import fs from 'fs'
+import { parse } from '@babel/parser'
+import traverseModule from '@babel/traverse'
+const traverse = typeof traverseModule === 'function' ? traverseModule : traverseModule.default
 
 function getExportedSymbols(filePath) {
-  const code = fs.readFileSync(filePath, 'utf-8');
-  const ast = parse(code, {
-    sourceType: 'module',
-    plugins: ['jsx', 'typescript']
-  });
+  const exported = new Set()
 
-  const exported = new Set();
+  let ast
+  try {
+    const code = fs.readFileSync(filePath, 'utf-8')
+    ast = parse(code, {
+      sourceType: 'module',
+      plugins: ['jsx', 'typescript']
+    })
+  } catch {
+    return exported
+  }
 
-  babelTraverse(ast, {
+  traverse(ast, {
     ExportNamedDeclaration({ node }) {
       if (node.declaration) {
         if (node.declaration.declarations) {
           node.declaration.declarations.forEach(d => {
-            if (d.id?.name) exported.add(d.id.name);
-          });
+            if (d.id?.name) exported.add(d.id.name)
+          })
         } else if (node.declaration.id?.name) {
-          exported.add(node.declaration.id.name);
+          exported.add(node.declaration.id.name)
         }
       }
       if (node.specifiers) {
-        node.specifiers.forEach(spec => exported.add(spec.exported.name));
+        node.specifiers.forEach(spec => exported.add(spec.exported.name))
       }
     },
     ExportDefaultDeclaration({ node }) {
       if (node.declaration?.name) {
-        exported.add('default:' + node.declaration.name);
+        exported.add('default:' + node.declaration.name)
       } else {
-        exported.add('default');
+        exported.add('default')
       }
     }
-  });
+  })
 
-  return exported;
+  return exported
 }
 
 function getUsedSymbols(allFiles) {
-  const used = new Set();
+  const used = new Set()
 
   for (const file of allFiles) {
-    const code = fs.readFileSync(file, 'utf-8');
-    let ast;
+    const code = fs.readFileSync(file, 'utf-8')
+    let ast
     try {
       ast = parse(code, {
         sourceType: 'unambiguous',
         plugins: ['jsx', 'typescript', 'dynamicImport']
-      });
+      })
     } catch {
-      continue;
+      continue
     }
 
-    babelTraverse(ast, {
+    traverse(ast, {
       ImportSpecifier({ node }) {
-        if (node.imported?.name) used.add(node.imported.name);
+        if (node.imported?.name) used.add(node.imported.name)
       },
-      ImportDefaultSpecifier({ node }) {
-        used.add('default');
+      ImportDefaultSpecifier() {
+        used.add('default')
       },
       CallExpression({ node }) {
         if (node.callee?.type === 'Identifier') {
-          used.add(node.callee.name);
+          used.add(node.callee.name)
         }
       },
       MemberExpression({ node }) {
         if (node.object?.type === 'Identifier') {
-          used.add(node.object.name);
+          used.add(node.object.name)
         }
         if (node.property?.type === 'Identifier') {
-          used.add(node.property.name);
+          used.add(node.property.name)
         }
       },
       JSXIdentifier({ node }) {
-        used.add(node.name);
+        used.add(node.name)
       }
-    });
+    })
   }
 
-  return used;
+  return used
 }
 
 export function detectUnusedExports(allJSFiles) {
-  const unusedByFile = {};
-  const usedSymbols = getUsedSymbols(allJSFiles);
+  const unusedByFile = {}
+  const usedSymbols = getUsedSymbols(allJSFiles)
 
   for (const file of allJSFiles) {
-    const exported = getExportedSymbols(file);
+    const exported = getExportedSymbols(file)
     const unused = [...exported].filter(e => {
-      const baseName = e.replace(/^default:/, '');
-      return !usedSymbols.has(baseName);
-    });
+      const baseName = e.replace(/^default:/, '')
+      return !usedSymbols.has(baseName)
+    })
 
     if (unused.length) {
-      unusedByFile[file] = unused;
+      unusedByFile[file] = unused
     }
   }
 
-  return unusedByFile;
+  return unusedByFile
 }

@@ -6,13 +6,29 @@ import { runSweepy } from './runSweepy.js'
 const rawArgv = process.argv.slice(2)
 
 
-if (
-  rawArgv.includes('--detect') && rawArgv.length === 1
-) rawArgv.push('--help')
+const detectIndex = rawArgv.indexOf('--detect')
+if (detectIndex !== -1) {
+  const detectValues = rawArgv.slice(detectIndex + 1).filter(arg => !arg.startsWith('-'))
+  const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps']
+
+  const hasInvalid = detectValues.length === 0 || detectValues.some(val => !validDetectTypes.includes(val))
+  if (hasInvalid) {
+    rawArgv.length = 0
+    rawArgv.push('--detect', '--help')
+  }
+}
+
 
 if (
   (rawArgv.includes('--ignore') || rawArgv.includes('-i')) && rawArgv.length === 1
 ) rawArgv.push('--help')
+
+
+if (
+  rawArgv.includes('--export') &&
+  (rawArgv.length === 1 || rawArgv[rawArgv.indexOf('--export') + 1]?.startsWith('-'))
+) rawArgv.push('--help')
+
 
 handleInlineHelp(rawArgv)
 

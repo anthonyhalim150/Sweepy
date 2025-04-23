@@ -1,10 +1,9 @@
 import fs from 'fs'
-import path from 'path'
 import { parse } from '@babel/parser'
-import traverse from '@babel/traverse'
+import traverseModule from '@babel/traverse'
 import { globby } from 'globby'
 
-const { default: babelTraverse } = traverse
+const traverse = typeof traverseModule === 'function' ? traverseModule : traverseModule.default
 
 export async function detectUnusedEnvKeys(projectDir, ignorePatterns = []) {
   const envFiles = await globby(['.env*'], { cwd: projectDir, absolute: true })
@@ -44,7 +43,7 @@ export async function detectUnusedEnvKeys(projectDir, ignorePatterns = []) {
       continue
     }
 
-    babelTraverse(ast, {
+    traverse(ast, {
       MemberExpression({ node }) {
         if (
           node.object?.type === 'MemberExpression' &&

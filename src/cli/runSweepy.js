@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
+import ora from 'ora'
 import { loadSweepyRcConfig } from '../config/rcConfig.js'
 import { loadConfig } from '../config/config.js'
 import { findUnusedFiles } from '../core/detector.js'
@@ -13,6 +14,7 @@ import { writeSweepyConfigToPackage } from '../utils/writePackageSweepyConfig.js
 import { pruneSweepyTrash } from '../utils/pruneTrash.js'
 import { getChangedFilesSinceCommit } from '../utils/getChangedFilesSinceCommit.js'
 import { recoverFile, recoverAll, recoverInteractive } from '../utils/recoverFromTrash.js'
+import { runDepcheckSweepy } from '../utils/dependencyChecker.js'
 
 export async function runSweepy(options, cwd) {
   if (typeof options.export === 'string' && !/\.[a-z0-9]+$/i.test(options.export)) {
@@ -76,7 +78,6 @@ export async function runSweepy(options, cwd) {
     console.log(chalk.gray('🔍 Scanning project in:'), cwd)
   }
 
-
   if (options.init) {
     writeSweepyConfigToPackage(cwd)
     return
@@ -104,23 +105,47 @@ export async function runSweepy(options, cwd) {
     }
   }
 
-  const result = await findUnusedFiles(
-    cwd,
-    config.ignore,
-    options.verbose,
-    changedFiles,
-    options.detect
-  )
-  
+  const spinner = ora('Scanning project for unused files...').start()
+
+  let result
+  try {
+    result = await findUnusedFiles(
+      cwd,
+      config.ignore,
+      options.verbose,
+      changedFiles,
+      options.detect
+    )
+    spinner.succeed('Scan complete.')
+  } catch (err) {
+    spinner.fail('Scan failed.')
+    console.error(err)
+    return
+  }
+
+  let depcheckResult = { unusedDependencies: [], missingDependencies: [] }
+
+  if (!options.detect || options.detect.includes('deps')) {
+    const depSpinner = ora('Checking npm dependencies...').start()
+    try {
+      depcheckResult = await runDepcheckSweepy(cwd)
+      depSpinner.succeed('Dependency check complete.')
+    } catch (err) {
+      depSpinner.fail('Dependency check failed.')
+      console.error(err)
+    }
+  }
 
   const filteredResult = onlyTypes.length > 0 ? filterByTypes(result, onlyTypes) : result
+
+  filteredResult.unusedDependencies = depcheckResult.unusedDependencies
+  filteredResult.missingDependencies = depcheckResult.missingDependencies
 
   if (options.json) {
     printJsonReport(filteredResult)
   } else {
     printReport(filteredResult)
   }
-
 
   if (options.htmlReport) {
     generateHtmlReport(filteredResult)

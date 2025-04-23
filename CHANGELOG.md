@@ -1,5 +1,19 @@
 # 📦 Changelog
 
+## v1.1.5
+
+- 🧩 **Dependency Detection Integration**: Sweepy now detects unused and undeclared dependencies from `package.json`. Use `--detect deps` to include or isolate this check.
+- 📤 **Smarter Inline Help**: Invalid or missing `--detect` values now redirect to `--detect --help` instead of showing generic usage output.
+- 🌀 **Loading Spinners**: The CLI now displays loading indicators during scan and depcheck stages for improved user experience.
+- 🔧 **Stronger CLI Guardrails**: Misused flags like `--export`, `--ignore`, or `--detect` now show helpful usage instructions instead of crashing.
+- 🧠 **Improved String Extraction Logic**: Enhanced detection accuracy for dynamic expressions, templates, and conditional values across the entire codebase.
+- 🚀 **Better Dynamic Detection**: Increased reliability when analyzing complex code patterns and expressions.
+- 🎨 **CSS Selector Safelist Support**: Define safelist patterns using `customCssSafelist` in `.sweepyrc.json` or `package.json` to prevent false positives.
+- 🎛️ **Enhanced `--verbose` Output**: Shows detailed insights about scanned directories, file counts, JSX matches, and import paths.
+- 🛠 **Fixed `@babel/traverse` interop bug**: Sweepy now correctly resolves `traverse` in both ESM and CJS environments using a safe fallback.
+- 🧪 Improved test coverage with Vitest and CI integration.  
+- 📈 Codecov support: Code coverage is now automatically uploaded and visualized for every push and pull request.
+
 ## v1.1.0
 
 - 🎯 **Unused CSS Selector Detection**: Now detects unused `.class`, `#id`, and element tags across JSX, HTML, and templates
@@ -19,7 +33,9 @@
 
 ## v1.0.1
 
-- 🚀 Initial release: Detects unused JavaScript/TypeScript modules, CSS/SCSS files, and static assets (PNG, JPG, SVG)
-- 🧼 Includes safe delete mode (`--delete`, `--interactive`)
-- 📤 Supports export to text or JSON
-- 📊 CLI-friendly output for easy integration into CI workflows
+- 🚀 **First public release**: Detects unused JavaScript/TypeScript modules, CSS/SCSS files, and static assets (PNG, JPG, SVG)
+- 🧼 **Safe delete support**: Use `--delete` or `--interactive` to move unused files to a recovery folder
+- 📤 **Export support**: Output scan results as `.txt` or `.json`
+- 📊 **CLI-friendly output**: Designed for clean, readable terminal usage and CI pipelines
+- 🧪 **Initial test suite added**: Basic unit tests and CLI validation using [Vitest](https://vitest.dev)
+- 🤖 **CI integration setup**: GitHub Actions configured for linting and test verification

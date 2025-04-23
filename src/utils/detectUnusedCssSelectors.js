@@ -3,9 +3,10 @@ import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 import path from 'path'
 import { parse } from '@babel/parser'
-import traverse from '@babel/traverse'
+import traverseModule from '@babel/traverse'
+import { extractStrings } from './extractStringsEnhanced.js'
 
-const { default: babelTraverse } = traverse
+const traverse = typeof traverseModule === 'function' ? traverseModule : traverseModule.default
 
 function extractSelectorsFromCSS(filePath) {
   const css = fs.readFileSync(filePath, 'utf-8')
@@ -46,43 +47,6 @@ function extractSelectorsFromCSS(filePath) {
   return { selectors, keyframes, animationsUsed }
 }
 
-function extractStrings(expr) {
-  const values = []
-  if (!expr) return values
-
-  switch (expr.type) {
-    case 'StringLiteral':
-      values.push(expr.value)
-      break
-    case 'TemplateLiteral':
-      expr.quasis.forEach(q => values.push(q.value.raw))
-      break
-    case 'ConditionalExpression':
-      values.push(...extractStrings(expr.consequent))
-      values.push(...extractStrings(expr.alternate))
-      break
-    case 'LogicalExpression':
-      values.push(...extractStrings(expr.left))
-      values.push(...extractStrings(expr.right))
-      break
-    case 'BinaryExpression':
-      values.push(...extractStrings(expr.left))
-      values.push(...extractStrings(expr.right))
-      break
-    case 'ArrayExpression':
-      expr.elements.forEach(el => values.push(...extractStrings(el)))
-      break
-    case 'ObjectExpression':
-      expr.properties.forEach(p => {
-        if (p.key?.type === 'StringLiteral') values.push(p.key.value)
-        if (p.key?.type === 'Identifier') values.push(p.key.name)
-      })
-      break
-  }
-
-  return values
-}
-
 function extractUsedSelectorsFromCode(contentMap, customMatchers = [], cssModuleIdentifiers = new Set()) {
   const used = new Set()
   const matchers = new Set(['clsx', 'classnames', ...customMatchers])
@@ -111,7 +75,7 @@ function extractUsedSelectorsFromCode(contentMap, customMatchers = [], cssModule
         continue
       }
 
-      babelTraverse(ast, {
+      traverse(ast, {
         JSXAttribute({ node }) {
           if (node.name.name === 'className') {
             if (node.value?.type === 'StringLiteral') {
@@ -166,16 +130,23 @@ function extractUsedSelectorsFromCode(contentMap, customMatchers = [], cssModule
   return { used }
 }
 
-export async function detectUnusedCssSelectors(cssFiles, contentMap, customMatchers = []) {
+export async function detectUnusedCssSelectors(cssFiles, contentMap, customMatchers = [], customCssSafelist = []) {
   const result = {}
   const cssModuleIdentifiers = new Set()
   const { used } = extractUsedSelectorsFromCode(contentMap, customMatchers, cssModuleIdentifiers)
 
+  const safelistRegs = customCssSafelist.map(p => new RegExp(p))
+
   for (const cssFile of cssFiles) {
     const { selectors, keyframes, animationsUsed } = extractSelectorsFromCSS(cssFile)
 
-    const unusedSelectors = [...selectors].filter(sel => !used.has(sel))
-    const unusedKeyframes = [...keyframes].filter(k => !animationsUsed.has(k))
+    const unusedSelectors = [...selectors].filter(sel =>
+      !used.has(sel) && !safelistRegs.some(rx => rx.test(sel))
+    )
+
+    const unusedKeyframes = [...keyframes].filter(k =>
+      !animationsUsed.has(k) && !safelistRegs.some(rx => rx.test(`@keyframes ${k}`))
+    )
 
     const fullList = [
       ...unusedSelectors,

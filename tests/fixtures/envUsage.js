@@ -1,0 +1,1 @@
+console.log('Using env var:', process.env.USED_VAR)

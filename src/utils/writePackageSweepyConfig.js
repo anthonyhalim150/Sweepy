@@ -11,7 +11,6 @@ export function writeSweepyConfigToPackage(cwd = process.cwd()) {
   const raw = fs.readFileSync(pkgPath, 'utf-8')
   const pkg = JSON.parse(raw)
 
-
   pkg.sweepy = {
     ignore: [
       '**/node_modules/**',
@@ -50,9 +49,14 @@ export function writeSweepyConfigToPackage(cwd = process.cwd()) {
     customAliases: {
       '@components': 'src/components',
       '@utils': 'src/utils'
-    }
+    },
+    customCssSafelist: [
+      "^\\.status$",
+      "^\\.active$",
+      "^\\.suspended$"
+    ]
   }
 
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
-  console.log('✅ sweepy config block with full ignore and customAliases added to package.json')
+  console.log('✅ sweepy config block with full ignore and custom configs added to package.json')
 }

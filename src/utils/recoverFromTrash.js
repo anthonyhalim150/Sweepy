@@ -31,7 +31,12 @@ export function recoverFile(fileName) {
     fs.mkdirSync(toDir, { recursive: true })
   }
 
-  fs.renameSync(fromPath, toPath)
+  try {
+    fs.renameSync(fromPath, toPath)
+  } catch (err) {
+    console.error('❌ Could not recover', fileName, err)
+    return
+  }  
   delete manifest[fileName]
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
   console.log('✅ Recovered:', toPath)

@@ -1,60 +1,59 @@
-import fs from 'fs';
-import path from 'path';
-import { parse } from '@babel/parser';
-import traverse from '@babel/traverse';
+import fs from 'fs'
+import path from 'path'
+import { parse } from '@babel/parser'
+import traverseModule from '@babel/traverse'
 
-const { default: babelTraverse } = traverse;
+const traverse = typeof traverseModule === 'function' ? traverseModule : traverseModule.default
 
 export function detectDynamicUsedFiles(files, cwd) {
-  const usedFiles = new Set();
+  const usedFiles = new Set()
 
   for (const file of files) {
-    let code;
+    let code
     try {
-      code = fs.readFileSync(file, 'utf-8');
+      code = fs.readFileSync(file, 'utf-8')
     } catch {
-      continue;
+      continue
     }
 
-    let ast;
+    let ast
     try {
       ast = parse(code, {
         sourceType: 'unambiguous',
         plugins: ['jsx', 'typescript', 'dynamicImport']
-      });
+      })
     } catch {
-      continue;
+      continue
     }
 
-    const dynamicFolders = [];
+    const dynamicFolders = []
 
-    babelTraverse(ast, {
+    traverse(ast, {
       CallExpression({ node }) {
         const isReaddirSync =
           node.callee?.type === 'MemberExpression' &&
           node.callee.object?.name === 'fs' &&
           node.callee.property?.name === 'readdirSync' &&
-          node.arguments?.[0]?.type === 'StringLiteral';
+          node.arguments?.[0]?.type === 'StringLiteral'
 
         if (isReaddirSync) {
-          const folderPath = path.resolve(path.dirname(file), node.arguments[0].value);
-          dynamicFolders.push(folderPath);
+          const folderPath = path.resolve(path.dirname(file), node.arguments[0].value)
+          dynamicFolders.push(folderPath)
         }
       }
-    });
+    })
 
     for (const folder of dynamicFolders) {
-      if (!fs.existsSync(folder)) continue;
-      const entries = fs.readdirSync(folder);
-
+      if (!fs.existsSync(folder)) continue
+      const entries = fs.readdirSync(folder)
       for (const entry of entries) {
-        const full = path.resolve(folder, entry);
+        const full = path.resolve(folder, entry)
         if (fs.existsSync(full) && fs.statSync(full).isFile()) {
-          usedFiles.add(full.replace(/\\/g, '/'));
+          usedFiles.add(full.replace(/\\/g, '/'))
         }
       }
     }
   }
 
-  return usedFiles;
+  return usedFiles
 }
