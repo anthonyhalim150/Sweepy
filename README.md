@@ -1,18 +1,23 @@
 # 🧹 Sweepy
 
-> Detect and eliminate unused code and leftover files in your JavaScript, TypeScript, and all your projects — including variables, modules, stylesheets, CSS selectors, package dependencies, exports, media assets, aliases, and `.env` keys.
+> Detect and eliminate unused code and leftover files in your JavaScript, TypeScript, and all your projects — including variables, modules, stylesheets, CSS selectors, config files, JSON data, HTML templates, `.env` keys, exports, aliases, dependencies, and media assets.
 
-**Sweepy** is an all-in-one, AST-powered CLI tool for eliminating dead code. It helps you find:
 
-- Unused JavaScript, TypeScript, CSS, and SCSS files
-- Declared but unused variables in source code
-- Unused class, keyframes, and ID selectors in stylesheets
-- Unused `.env` variables
-- Dead or misconfigured alias paths
-- Orphaned image/media assets (PNG, JPG, SVG, WebP)
-- Unreferenced exports and JSX components
-- Dynamically loaded files and runtime imports
-- Unused or undeclared npm dependencies
+**Sweepy** is an all-in-one, AST-powered CLI tool for eliminating unused code. It helps you find:
+
+- Unused JavaScript, TypeScript, CSS, and SCSS files  
+- Unused or unreferenced `.html` and `.json` files  
+- Declared but unused variables in source code  
+- Unused class, keyframes, and ID selectors in stylesheets  
+- Unused `.env` variables  
+- Unused or duplicate config files (e.g. `.babelrc`, `tsconfig.*.json`)  
+- Dead or misconfigured alias paths  
+- Orphaned image/media assets (PNG, JPG, SVG, WebP)  
+- Unreferenced exports and JSX components  
+- Dynamically loaded files and runtime imports  
+- Unused or undeclared npm dependencies  
+- Interactive safe deletion with file-type grouping and dry-run mode  
+- Exportable JSON, HTML, and plain-text reports
 
 Sweepy is built for developers, teams, CI pipelines, and open-source maintainers who want to keep projects clean and efficient.
 
@@ -70,23 +75,24 @@ Clean code starts with clean files. Keep it Sweepy! 🧹
 
 ## ✨ Features
 
-- 🔍 Detect unused `.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, and image assets  
-- 🔒 Detect unused `.env` keys  
+- 🔍 Detect unused `.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, `.html`, `.json`, and media assets (PNG, JPG, SVG, WebP)  
+- ⚙️ Detect unused or duplicate config files (`--detect config`) such as `.babelrc`, `.prettierrc`, `.editorconfig`, and `tsconfig.*.json`  
+- 🔒 Detect unused `.env` keys in any environment  
 - 🕳️ Detect unused variables in JS/TS/TSX files (`--detect vars`)  
 - 🧭 Detect dead or misconfigured aliases from tsconfig, webpack, vite, and babel (`--detect alias`)  
-- 🧼 **Auto-clean support** – Easily clean all unused files with `--delete --confirm`  
-- 🧠 AST-based import and export graph analysis (static + dynamic)  
+- 📦 Detect unused and undeclared npm dependencies (`--detect deps`)  
 - 📦 Export symbol usage tracking (`export const`, `export default`)  
 - 🎯 JSX component reference detection (`<MyComponent />`)  
-- 🎨 Unused CSS selector detection (class, keyframes, ID, HTML tags)  
-- 📦 Detect unused and undeclared npm dependencies via `--detect deps`  
-- 🖌️ Support for safelisting CSS selectors with `customCssSafelist` in `package.json` or `.sweepyrc.json`  
-- 🗺️ Alias resolution (Webpack, Vite, Babel, custom)  
-- 🗂 Config support via CLI or `package.json`  
-- ♻️ Safe deletion to `.sweepy-trash/` with full recovery  
+- 🎨 Unused CSS selector detection (class, ID, keyframes, tag-based selectors)  
+- 🗺️ Alias resolution across Webpack, Vite, Babel, tsconfig, and custom  
+- 🧠 AST-based analysis supporting static + dynamic imports (`import()`, `require()`)  
+- 🔁 Git integration with `--since <commit>` for incremental analysis  
+- 🧼 **Auto-clean** with `--delete --confirm`, or use `--interactive` for grouped selection  
+- 💡 Interactive deletion UI grouped by file type, supports safe quit (`q`)  
+- ♻️ Files go to `.sweepy-trash/` and are fully recoverable  
 - 📤 Export results as JSON, TXT, or styled HTML reports  
-- 🔁 Git integration with `--since` for incremental scans  
-- ⚙️ CI-friendly output (dry-run, headless, JSON)  
+- 🖌️ CSS safelist support via `customCssSafelist` in config  
+- ⚙️ CI-friendly dry-run support with JSON output  
 
 ---
 
@@ -98,27 +104,30 @@ Sweepy doesn’t just check imports—it analyzes ASTs, handles dynamic patterns
 
 ## 🔍 Why Sweepy?
 
-| Feature                                          | 🧹 Sweepy | depcheck | unimported | PurgeCSS | ts-prune | eslint-plugin-unused-imports |
-|:-------------------------------------------------|:----------|:---------|:-----------|:---------|:---------|:------------------------------|
-| AST-based import/export analysis                 | ✅        | ❌       | ❌         | ❌       | ✅       | ❌                            |
-| JSX `<Component />` detection                    | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| Export symbol usage analysis                     | ✅        | ❌       | ❌         | ❌       | ✅       | ✅ (imports only)             |
-| Git-aware scanning (`--since`)                   | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| Unused CSS/SCSS selectors                        | ✅        | ❌       | ❌         | ✅ (regex) | ❌     | ❌                            |
-| `.env` key usage detection                       | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| Unused variable detection (`--detect vars`)      | ✅        | ❌       | ❌         | ❌       | ❌       | ✅                            |
-| Dead/misconfigured alias detection               | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| HTML + JSON report output                        | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| Safe deletion with recovery                      | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| Alias resolution (TS/Webpack/Vite/Babel)         | ✅        | ✅       | ✅         | ❌       | ⚠️ manual | ✅                            |
-| CI-friendly dry-run mode                         | ✅        | ✅       | ❌         | ❌       | ❌       | ✅                            |
-| Dynamic import / `require()` tracking            | ✅        | ❌       | ✅         | ❌       | ❌       | ❌                            |
-| Glob export support (`export *`)                 | ✅        | ❌       | ❌         | ❌       | ✅       | ❌                            |
-| `.scss` and CSS Modules support                  | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| `classnames`, `clsx` handling                    | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
-| CLI + `package.json` config support              | ✅        | ❌       | ✅         | ❌       | ❌       | ❌                            |
-| Unused + undeclared dependencies detection       | ✅        | ✅       | ✅         | ❌       | ❌       | ❌                            |
-| CSS selector safelist support                    | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Feature                                               | 🧹 Sweepy | depcheck | unimported | PurgeCSS | ts-prune | eslint-plugin-unused-imports |
+|:------------------------------------------------------|:----------|:---------|:-----------|:---------|:---------|:------------------------------|
+| AST-based import/export analysis                      | ✅        | ❌       | ❌         | ❌       | ✅       | ❌                            |
+| JSX `<Component />` detection                         | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Export symbol usage analysis                          | ✅        | ❌       | ❌         | ❌       | ✅       | ✅ (imports only)             |
+| Git-aware scanning (`--since`)                        | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Unused HTML + JSON file detection                     | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Unused CSS/SCSS selectors                             | ✅        | ❌       | ❌         | ✅ (regex) | ❌     | ❌                            |
+| `.env` key usage detection                            | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Unused variable detection (`--detect vars`)           | ✅        | ❌       | ❌         | ❌       | ❌       | ✅                            |
+| Unused or duplicate config file detection             | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Dead/misconfigured alias detection                    | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| HTML + JSON report output                             | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Safe deletion with recovery                           | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Interactive file deletion UI with type grouping       | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| Alias resolution (TS/Webpack/Vite/Babel)              | ✅        | ✅       | ✅         | ❌       | ⚠️ manual | ✅                            |
+| CI-friendly dry-run mode                              | ✅        | ✅       | ❌         | ❌       | ❌       | ✅                            |
+| Dynamic import / `require()` tracking                 | ✅        | ❌       | ✅         | ❌       | ❌       | ❌                            |
+| Glob export support (`export *`)                      | ✅        | ❌       | ❌         | ❌       | ✅       | ❌                            |
+| `.scss` and CSS Modules support                       | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| `classnames`, `clsx` handling                         | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |
+| CLI + `package.json` config support                   | ✅        | ❌       | ✅         | ❌       | ❌       | ❌                            |
+| Unused + undeclared dependencies detection            | ✅        | ✅       | ✅         | ❌       | ❌       | ❌                            |
+| CSS selector safelist support                         | ✅        | ❌       | ❌         | ❌       | ❌       | ❌                            |                           |
 
 ---
 
@@ -140,7 +149,7 @@ sweepy --detect env exports       # Detect only env and exports
 | Option                | Description |
 |-----------------------|-------------|
 | `--only`              | Filter scan to `js`, `css`, `assets` |
-| `--detect`            | Choose detection types: js, css, assets, exports, deps, env, alias, vars |
+| `--detect`            | Choose detection types: html, js, css, json, assets, exports, deps, env, alias, vars, config  |
 | `--delete`            | Delete unused files |
 | `--confirm`           | Delete without confirmation |
 | `--interactive`       | Select files to delete or recover |

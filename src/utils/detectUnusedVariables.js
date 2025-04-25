@@ -1,12 +1,17 @@
 import fs from 'fs'
 import { parse } from '@babel/parser'
-import { createRequire } from 'module'
 
-const require = createRequire(import.meta.url)
-const eslintScope = require('eslint-scope')
-
-export function detectUnusedVariables(files) {
+export async function detectUnusedVariables(files) {
   const result = {}
+
+  let eslintScope
+  try {
+    const scopeModule = await import('eslint-scope')
+    eslintScope = scopeModule.default || scopeModule
+  } catch (e) {
+    console.warn('⚠️ eslint-scope failed to load. Skipping unused variable detection.')
+    return {}
+  }
 
   for (const file of files) {
     let code = ''
@@ -28,14 +33,14 @@ export function detectUnusedVariables(files) {
 
     let scopeManager
     try {
-        scopeManager = eslintScope.analyze(ast, {
-            ecmaVersion: 2022,
-            sourceType: 'module',
-            optimistic: true,
-            ignoreEval: true
-        })
-    } catch (e) {
-        continue
+      scopeManager = eslintScope.analyze(ast, {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        optimistic: true,
+        ignoreEval: true
+      })
+    } catch {
+      continue
     }
 
     const unused = []

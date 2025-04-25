@@ -1,20 +1,25 @@
 import chalk from 'chalk'
 
 export function printReport({
+  unusedHTML,
   unusedJS,
   unusedCSS,
+  unusedJSON,
   unusedAssets,
   unusedExports,
   unusedCssSelectors,
   unusedEnv,
   unusedDependencies,
   missingDependencies,
+  unusedConfigs,
   deadAliases,
-  unusedVars
+  unusedVars,
 }) {
   const hasUnused =
+    (unusedHTML?.length) ||
     unusedJS.length ||
     unusedCSS.length ||
+    (unusedJSON?.length) ||
     unusedAssets.length ||
     (unusedExports && Object.values(unusedExports).some(syms => syms.length)) ||
     (unusedCssSelectors && Object.keys(unusedCssSelectors).length > 0) ||
@@ -22,6 +27,7 @@ export function printReport({
     (unusedDependencies?.length) ||
     (missingDependencies?.length) ||
     (deadAliases && Object.keys(deadAliases).length > 0) ||
+    unusedConfigs?.length ||
     Object.values(unusedVars || {}).some(vars => vars.length > 0)
 
   if (!hasUnused) {
@@ -29,8 +35,13 @@ export function printReport({
     return
   }
 
+  if (unusedHTML.length) {
+    console.log(chalk.yellow('\n📄 Unused HTML files:'))
+    unusedHTML.forEach(f => console.log('  •', f))
+  }
+  
   if (unusedJS.length) {
-    console.log(chalk.yellow('\n🧠 Unused JS/TS files:'))
+    console.log(chalk.yellow('\n📘 Unused JS/TS files:'))
     unusedJS.forEach(f => console.log('  •', f))
   }
 
@@ -38,6 +49,12 @@ export function printReport({
     console.log(chalk.yellow('\n🎨 Unused CSS/SCSS files:'))
     unusedCSS.forEach(f => console.log('  •', f))
   }
+
+  if (unusedJSON.length) {
+    console.log(chalk.yellow('\n🗂️ Unused JSON files:'))
+    unusedJSON.forEach(f => console.log('  •', f))
+  }
+  
 
   if (unusedAssets.length) {
     console.log(chalk.yellow('\n🖼️ Orphaned assets:'))
@@ -77,6 +94,12 @@ export function printReport({
     console.log(chalk.red('\n❗ Missing (used but undeclared) dependencies:'))
     missingDependencies.forEach(dep => console.log('  •', dep))
   }
+
+  if (unusedConfigs.length) {
+    console.log(chalk.yellow('\n⚙️ Unused or duplicate config files:'))
+    unusedConfigs.forEach(f => console.log('  •', f))
+  }
+  
 
   if (deadAliases && Object.keys(deadAliases).length > 0) {
     console.log(chalk.red('\n🧭 Dead Alias Paths:'))

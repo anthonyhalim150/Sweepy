@@ -8,7 +8,10 @@ export async function promptFileDeletion(files) {
       type: 'checkbox',
       name: 'toDelete',
       message: 'Select files to delete:',
-      choices: files.map(f => ({ name: f, value: f })),
+      choices: files.flatMap(f => {
+        if (typeof f === 'object' && f.separator) return new inquirer.Separator(f.separator)
+        return { name: f, value: f }
+      }),      
       pageSize: 20
     }
   ]);

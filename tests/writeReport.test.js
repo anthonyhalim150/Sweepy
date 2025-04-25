@@ -86,4 +86,23 @@ describe('writeTextReport()', () => {
     expect(content).toContain('[unnamed]')
     expect(content).not.toMatch(/\(line/)
   })
+  it('writes unused HTML, JSON, and config files to the report', () => {
+    const extendedResult = {
+      ...mockResult,
+      unusedHTML: ['index.html', 'about.html'],
+      unusedJSON: ['data.json'],
+      unusedConfigs: ['.babelrc', 'tsconfig.extra.json']
+    }
+  
+    writeTextReport(extendedResult, REPORT_PATH)
+    const content = fs.readFileSync(REPORT_PATH, 'utf-8')
+  
+    expect(content).toContain('📄 Unused HTML files:')
+    expect(content).toContain('• index.html')
+    expect(content).toContain('🗂️ Unused JSON files:')
+    expect(content).toContain('• data.json')
+    expect(content).toContain('⚙️ Unused or duplicate config files:')
+    expect(content).toContain('• .babelrc')
+  })
+  
 })
