@@ -19,18 +19,16 @@ export function handleInlineHelp(argv) {
 
 function printOnlyHelp() {
   console.log(`
---only [types...]
+--only [extensions...]
 
-Limit scan to specific file types:
-
-  js      → JavaScript and TypeScript files (.js, .ts, .jsx, .tsx)
-  css     → CSS and SCSS stylesheets (.css, .scss)
-  assets  → Static media assets (.png, .jpg, .svg, .webp, etc.)
+Filter output to show only files with the specified extensions.
 
 Examples:
   $ sweepy --only js
-  $ sweepy --only js css
-  $ sweepy --only assets --html-report
+  $ sweepy --only .js
+  $ sweepy --only js ts jsx
+  $ sweepy --only css scss
+  $ sweepy --only env
 `)
   process.exit(0)
 }
@@ -189,6 +187,9 @@ Choose specific detection categories to run:
   exports  → Unused exported symbols in modules
   env      → Unused .env keys
   deps     → Unused or undeclared npm dependencies (from package.json)
+  alias    → Dead or misconfigured alias paths (tsconfig, webpack, babel, vite)
+  vars     → Unused local variables and function parameters
+
 
 By default, Sweepy runs all detectors.
 

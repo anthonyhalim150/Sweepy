@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { generateHtmlReport } from '../src/reporters/htmlReporter.js'
 
-describe('generateHtmlReport', () => {
+describe('generateHtmlReport()', () => {
   const testPath = 'temp-report.html'
 
   beforeEach(() => {
@@ -24,7 +24,13 @@ describe('generateHtmlReport', () => {
       unusedEnv: { unused: ['API_KEY'] },
       unusedDependencies: ['lodash'],
       missingDependencies: ['react'],
-      unresolvedDependencies: ['custom-module']
+      unresolvedDependencies: ['custom-module'],
+      deadAliases: {
+        webpack: { '@shared': 'src/shared' }
+      },
+      unusedVars: {
+        'foo.js': [{ name: 'temp', line: 1 }]
+      }
     }
 
     generateHtmlReport(data, testPath)
@@ -46,13 +52,15 @@ describe('generateHtmlReport', () => {
       unusedEnv: { unused: [] },
       unusedDependencies: [],
       missingDependencies: [],
-      unresolvedDependencies: []
+      unresolvedDependencies: [],
+      deadAliases: {},           
+      unusedVars: {}
     }
 
     generateHtmlReport(data, testPath)
 
-    const writtenHtml = fs.writeFileSync.mock.calls[0][1]
-    expect(writtenHtml).toContain('<h1>🧹 Sweepy Report</h1>')
-    expect(writtenHtml).not.toContain('<section><h2>')
+    const html = fs.writeFileSync.mock.calls[0][1]
+    expect(html).toContain('<h1>🧹 Sweepy Report</h1>')
+    expect(html).not.toContain('<section><h2>')
   })
 })

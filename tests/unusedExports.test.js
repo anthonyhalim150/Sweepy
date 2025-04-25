@@ -62,7 +62,7 @@ it('detects symbols used via member expressions and function calls', () => {
 it('handles parse error in importer file', () => {
   fs.readFileSync = vi.fn((filePath) => {
     if (filePath === mockFile) return `export const x = 1;`
-    if (filePath === mockImportFile) return `const ! = error` // triggers parse error
+    if (filePath === mockImportFile) return `const ! = error` 
     return ''
   })
 

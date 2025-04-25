@@ -3,13 +3,13 @@ import fs from 'fs'
 import path from 'path'
 import { extractImportsFromFiles } from '../src/core/astAnalyzer.js'
 import * as aliasUtil from '../src/utils/resolveAlias.js'
-import * as moreAliasUtil from '../src/utils/resolveMoreAliases.js'
 
-// Mock file paths
+
+
 const mockFile = path.resolve('test/fixtures/component.js')
 const aliasPath = path.resolve('src/components/Button.jsx')
 
-// Mock FS and alias resolution
+
 vi.mock('fs')
 vi.mock('../src/utils/resolveAlias.js', async (mod) => ({
   ...await vi.importActual('../src/utils/resolveAlias.js'),
@@ -23,7 +23,7 @@ vi.mock('../src/utils/resolveMoreAliases.js', () => ({
 
 beforeEach(() => {
   vi.restoreAllMocks()
-  vi.spyOn(console, 'warn').mockImplementation(() => {}) // suppress parse warnings
+  vi.spyOn(console, 'warn').mockImplementation(() => {}) 
 })
 
 describe('extractImportsFromFiles()', () => {

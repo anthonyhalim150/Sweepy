@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { detectDynamicUsedFiles } from '../src/utils/detectDynamicUsage.js'
 
-// Mock
+
 vi.mock('fs')
 
 const baseFile = path.resolve('test/fixtures/index.js')
@@ -62,7 +62,7 @@ it('skips entry if not file', () => {
   fs.readFileSync.mockReturnValue(code)
   fs.existsSync.mockImplementation((p) => p === dynamicFolder || p === fileA)
   fs.readdirSync.mockReturnValue(['a.js'])
-  fs.statSync.mockReturnValue({ isFile: () => false }) // simulate directory
+  fs.statSync.mockReturnValue({ isFile: () => false }) 
 
   const result = detectDynamicUsedFiles([baseFile])
   expect([...result]).toEqual([])

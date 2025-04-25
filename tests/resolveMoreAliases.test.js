@@ -74,3 +74,20 @@ it('returns empty object on parsing error', () => {
   expect(loadBabelAliases(cwd)).toEqual({})
   expect(loadViteAliases(cwd)).toEqual({})
 })
+it('returns empty object when alias block is missing', () => {
+
+  fs.existsSync = vi.fn(p => p.includes('webpack.config.js'))
+  fs.readFileSync = vi.fn(() => `module.exports = { resolve: {} }`)
+  expect(loadWebpackAliases(cwd)).toEqual({})
+
+
+  fs.existsSync = vi.fn(p => p.includes('babel.config.js'))
+  fs.readFileSync = vi.fn(() => `module.exports = { plugins: [] }`)
+  expect(loadBabelAliases(cwd)).toEqual({})
+
+  fs.existsSync = vi.fn(p => p.includes('vite.config.ts'))
+  fs.readFileSync = vi.fn(() => `defineConfig({})`)
+  expect(loadViteAliases(cwd)).toEqual({})
+})
+
+

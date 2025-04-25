@@ -1,5 +1,20 @@
 # 📦 Changelog
 
+## v1.2.0
+
+- 🕳️ **Unused Variable Detection**: Sweepy now detects unused variable declarations (e.g. `const x = 1`) using `eslint-scope` with full block/global scope awareness. Enable it using `--detect vars`.
+- 🧭 **Dead Alias Detection**: Sweepy now detects dead or misconfigured aliases defined in `tsconfig.json`, `webpack.config.js`, `babel.config.js`, and `vite.config.ts`. Enable this using `--detect alias` or run a full scan to include it automatically.
+- 🛡️ **Safer Static Analysis**: Sweepy now gracefully skips unparsable files (e.g. invalid JS, corrupted TS, malformed ASTs), ensuring crash-free scans even in large or messy codebases.
+- 🖼️ **Improved HTML Report Styling**: The visual report has been polished for better readability, clearer grouping, and cleaner spacing. Prepares the groundwork for future collapsible sections.
+- 🚫 **Improved Invalid Command Handling**: Running Sweepy with unknown commands (e.g. `sweepy erfuerif`) now prints a helpful message instead of showing raw commander errors.
+- 🧪 **Extension-Based Filtering with `--only`**: The `--only` flag now filters output by **actual file extensions** (e.g. `.js`, `.css`, `.env`, `.png`), not just category. This applies across all file-based detections, including exports, CSS selectors, alias paths, and unused files.
+
+### 🐛 Bug Fixes
+
+- 🐛 **Fixed `--detect` Parsing**: Fixed a bug where `--detect js --export file.json` would incorrectly trigger help output. The CLI now properly parses arguments even when detection types are followed by other flags.
+- 🐛 **Correct `.txt` Export Behavior**: Fixed a bug where `.txt` exports only included unused files but excluded other sections (e.g. variables, exports, env, aliases). Sweepy now exports all relevant sections consistently in `.txt` format.
+
+
 ## v1.1.5
 
 - 🧩 **Dependency Detection Integration**: Sweepy now detects unused and undeclared dependencies from `package.json`. Use `--detect deps` to include or isolate this check.

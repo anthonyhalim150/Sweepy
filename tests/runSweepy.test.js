@@ -13,7 +13,7 @@ vi.mock('../src/utils/recoverFromTrash.js', () => ({
   recoverInteractive: vi.fn()
 }))
 
-// Dynamically import the mocked exports AFTER vi.mock
+
 import { writeSweepyConfigToPackage } from '../src/utils/writePackageSweepyConfig.js'
 import { pruneSweepyTrash } from '../src/utils/pruneTrash.js'
 import { recoverInteractive } from '../src/utils/recoverFromTrash.js'
@@ -50,7 +50,7 @@ describe('runSweepy() early exit', () => {
 
   it('exits when --only is true without any types', async () => {
     await runSweepy({ only: true }, '/cwd')
-    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('--only requires at least one type'))
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('--only requires at least one extension'))
   })
 
   it('exits when --interactive is true but no --delete or --recover', async () => {

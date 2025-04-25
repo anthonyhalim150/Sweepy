@@ -9,8 +9,10 @@ import { detectUnusedCssSelectors } from '../utils/detectUnusedCssSelectors.js'
 import { loadSweepyRcConfig } from '../config/rcConfig.js'
 import { loadConfig } from '../config/config.js'
 import { detectUnusedEnvKeys } from '../utils/detectUnusedEnvKeys.js'
+import { detectDeadAliases } from '../utils/detectDeadAliases.js'
+import { detectUnusedVariables } from '../utils/detectUnusedVariables.js'
 
-const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps']
+const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps', 'alias', 'vars']
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -21,7 +23,6 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
   const fullConfig = loadConfig(projectDir, rcConfig.ignore || [])
   const customMatchers = rcConfig.customClassMatchers || []
   const customCssSafelist = fullConfig.customCssSafelist || []
-  
 
   const normalizedDetect = Array.isArray(detectTypes)
     ? detectTypes.map(t => t.toLowerCase()).filter(t => validDetectTypes.includes(t))
@@ -65,6 +66,8 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
   const unusedExports = detect('exports') ? detectUnusedExports(jsFiles) : {}
   const unusedEnv = detect('env') ? await detectUnusedEnvKeys(projectDir, ignorePatterns) : null
   const unusedCssSelectors = detect('css') ? await detectUnusedCssSelectors(cssFiles, contentMap, customMatchers, customCssSafelist) : {}
+  const deadAliases = detect('alias') ? detectDeadAliases(projectDir) : {}
+  const unusedVars = detect('vars') ? detectUnusedVariables(jsFiles) : {}
 
   const isUsed = (file) => {
     const base = normalize(file)
@@ -79,8 +82,11 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
 
   const unusedAssets = detect('assets') ? assetFiles.filter(assetPath => {
     const rel = path.relative(projectDir, assetPath).replace(/\\/g, '/')
-    const webPath = '/' + rel.split('public/').pop()
     const base = path.basename(assetPath)
+    const webPath = rel.startsWith('public/')
+      ? '/' + rel.slice('public/'.length)
+      : '/' + rel
+    
 
     return ![...contentMap.values()].some(code =>
       code.includes(rel) ||
@@ -94,7 +100,7 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
   if (verbose) {
     console.log(`\n🔍 Sweepy Verbose Mode:`)
     console.log(`📁 Project root: ${projectDir}`)
-  
+
     const allDirs = new Set(
       [...jsFiles, ...cssFiles, ...assetFiles, ...contentScanFiles]
         .map(f => path.relative(projectDir, path.dirname(f)).split(path.sep)[0])
@@ -103,7 +109,7 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
     for (const dir of allDirs) {
       console.log(`📂 Scanning directory: ${dir}/`)
     }
-  
+
     console.log('\n📊 File Summary:')
     console.log(`  • JS/TS files: ${jsFiles.length}`)
     console.log(`  • CSS/SCSS files: ${cssFiles.length}`)
@@ -112,18 +118,20 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
     console.log(`  • Static imports: ${staticUsed.size}`)
     console.log(`  • Dynamic usage matches: ${dynamicUsed.size}`)
     console.log(`  • JSX component matches: ${matchedJSXFiles.size}`)
-  
+
     console.log('\n⚙️ Sweepy Config:')
     console.log(`  • Safelisted CSS patterns: ${customCssSafelist.map(r => String(r)).join(', ') || 'none'}`)
     console.log(`  • Ignore patterns: ${ignorePatterns.join(', ') || 'none'}\n`)
   }
-  
+
   return {
     unusedJS,
     unusedCSS,
     unusedAssets,
     unusedExports,
     unusedCssSelectors,
-    unusedEnv
+    unusedEnv,
+    deadAliases,
+    unusedVars
   }
 }

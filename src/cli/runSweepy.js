@@ -8,6 +8,7 @@ import { findUnusedFiles } from '../core/detector.js'
 import { filterByTypes } from '../utils/filterByTypes.js'
 import { printReport, printJsonReport } from '../reporters/consoleReporter.js'
 import { generateHtmlReport } from '../reporters/htmlReporter.js'
+import { writeTextReport } from '../reporters/writeTextReport.js'
 import { promptFileDeletion } from './prompts.js'
 import { moveToTrash } from '../utils/moveToTrash.js'
 import { writeSweepyConfigToPackage } from '../utils/writePackageSweepyConfig.js'
@@ -33,7 +34,7 @@ export async function runSweepy(options, cwd) {
   }
 
   if (options.only === true || (Array.isArray(options.only) && options.only.length === 0)) {
-    console.log(chalk.red('\n⚠️  --only requires at least one type: js, css, assets'))
+    console.log(chalk.red('\n⚠️  --only requires at least one extension. For example: js, css, png'))
     console.log('Example: --only js css')
     return
   }
@@ -135,11 +136,16 @@ export async function runSweepy(options, cwd) {
       console.error(err)
     }
   }
+  const filteredResult = onlyTypes.length > 0
+  ? filterByTypes(result, onlyTypes)
+  : result
 
-  const filteredResult = onlyTypes.length > 0 ? filterByTypes(result, onlyTypes) : result
+  
 
   filteredResult.unusedDependencies = depcheckResult.unusedDependencies
   filteredResult.missingDependencies = depcheckResult.missingDependencies
+  filteredResult.unusedVars = result.unusedVars
+
 
   if (options.json) {
     printJsonReport(filteredResult)
@@ -154,24 +160,22 @@ export async function runSweepy(options, cwd) {
 
   if (options.export) {
     const ext = path.extname(options.export)
-    const all = [
-      ...filteredResult.unusedJS,
-      ...filteredResult.unusedCSS,
-      ...filteredResult.unusedAssets
-    ]
-
+  
     try {
       if (ext === '.json') {
         fs.writeFileSync(options.export, JSON.stringify(filteredResult, null, 2), 'utf-8')
       } else {
-        fs.writeFileSync(options.export, all.join('\n'), 'utf-8')
+        writeTextReport(filteredResult, options.export)
       }
+  
       console.log(chalk.green(`📤 Unused file list exported to ${options.export}`))
     } catch (e) {
       console.log(chalk.red(`❌ Failed to export file list: ${e.message}`))
     }
+  
     return
   }
+  
 
   const allFiles = [
     ...filteredResult.unusedJS,

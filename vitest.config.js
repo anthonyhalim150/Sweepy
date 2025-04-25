@@ -16,6 +16,8 @@ export default defineConfig({
         'src/utils/resolveAlias.js',
         'src/utils/getChangedFilesSinceCommit.js',
         'src/utils/traceBinImports.js',
+        'src/utils/detectUnusedCssSelectors.js',
+        'src/utils/detectUnusedEnvKeys.js',
         'tests/fixtures/**',
         'vitest.config.js' 
       ]

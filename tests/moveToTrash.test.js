@@ -27,9 +27,9 @@ describe('moveToTrash', () => {
 
   it('moves file to trash and updates manifest', () => {
     fs.existsSync = vi.fn()
-      .mockReturnValueOnce(true) // trashDir exists
-      .mockReturnValueOnce(true) // manifest exists
-      .mockReturnValueOnce(false) // targetPath doesn't exist
+      .mockReturnValueOnce(true) 
+      .mockReturnValueOnce(true) 
+      .mockReturnValueOnce(false) 
     fs.readFileSync = vi.fn().mockReturnValue('{}')
     fs.renameSync = vi.fn()
     fs.writeFileSync = vi.fn()
@@ -53,10 +53,10 @@ describe('moveToTrash', () => {
     const finalPath2 = path.join(trashDir, 'file-1.js')
 
     fs.existsSync = vi.fn()
-      .mockReturnValueOnce(true) // trashDir exists
-      .mockReturnValueOnce(true) // manifest exists
-      .mockReturnValueOnce(true) // file.js exists
-      .mockReturnValueOnce(false) // file-1.js doesn't exist
+      .mockReturnValueOnce(true) 
+      .mockReturnValueOnce(true) 
+      .mockReturnValueOnce(true) 
+      .mockReturnValueOnce(false) 
     fs.readFileSync = vi.fn().mockReturnValue('{}')
     fs.renameSync = vi.fn()
     fs.writeFileSync = vi.fn()

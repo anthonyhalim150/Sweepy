@@ -23,6 +23,7 @@ export function writeSweepyConfigToPackage(cwd = process.cwd()) {
       '**/.parcel-cache/**',
       '**/.cache/**',
       '**/.vite/**',
+      '**/*.d.ts',
       '.sweepy-trash/**',
       '**/test/**',
       '**/tests/**',

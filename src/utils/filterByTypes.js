@@ -1,14 +1,59 @@
-/**
- * Filters the result object by the given type(s).
- * @param {{ unusedJS: string[], unusedCSS: string[], unusedAssets: string[] }} result
- * @param {string[]} types
- */
-export function filterByTypes(result, types) {
-    const filtered = {
-      unusedJS: types.includes('js') ? result.unusedJS : [],
-      unusedCSS: types.includes('css') ? result.unusedCSS : [],
-      unusedAssets: types.includes('assets') ? result.unusedAssets : []
-    };
-    return filtered;
+export function filterByTypes(result, extensions) {
+  const normalizeExt = (ext) => {
+    const base = ext.replace(/^\./, '').toLowerCase()
+    switch (base) {
+      case 'scss':
+      case 'sass':
+        return 'css'
+      case 'jpg':
+      case 'jpeg':
+      case 'webp':
+      case 'gif':
+        return 'png'
+      default:
+        return base
+    }
   }
-  
+
+  const exts = new Set(extensions.map(normalizeExt))
+
+  const matchExt = (file) => {
+    if (typeof file !== 'string') return false
+    const ext = file.split('.').pop().toLowerCase()
+    return exts.has(normalizeExt(ext))
+  }
+
+  const filterByFile = (files) =>
+    Array.isArray(files) ? files.filter(matchExt) : []
+
+  const filterByFileKeys = (obj) =>
+    Object.fromEntries(
+      Object.entries(obj || {}).filter(([file]) => matchExt(file))
+    )
+
+  const filterAliasTargets = (deadAliases) => {
+    const filtered = {}
+    for (const [source, aliasMap] of Object.entries(deadAliases || {})) {
+      const entries = Object.entries(aliasMap || {}).filter(
+        ([_, targetPath]) => matchExt(targetPath)
+      )
+      if (entries.length) {
+        filtered[source] = Object.fromEntries(entries)
+      }
+    }
+    return filtered
+  }
+
+  return {
+    unusedJS: filterByFile(result.unusedJS),
+    unusedCSS: filterByFile(result.unusedCSS),
+    unusedAssets: filterByFile(result.unusedAssets),
+    unusedExports: filterByFileKeys(result.unusedExports),
+    unusedCssSelectors: filterByFileKeys(result.unusedCssSelectors),
+    unusedEnv: exts.has('env') ? result.unusedEnv : null,
+    deadAliases: filterAliasTargets(result.deadAliases),
+    unusedDependencies: result.unusedDependencies || [],
+    missingDependencies: result.missingDependencies || [],
+    unusedVars: result.unusedVars || {}
+  }
+}
