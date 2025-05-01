@@ -8,7 +8,7 @@ const rawArgv = process.argv.slice(2)
 const detectIndex = rawArgv.indexOf('--detect')
 if (detectIndex !== -1) {
   const detectValues = []
-  const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps', 'alias', 'vars']
+  const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps', 'alias', 'vars', 'html', 'json', 'config']
 
   for (let i = detectIndex + 1; i < rawArgv.length; i++) {
     const arg = rawArgv[i]

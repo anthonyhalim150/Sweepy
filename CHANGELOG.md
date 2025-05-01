@@ -1,5 +1,14 @@
 # 📦 Changelog
 
+## v1.2.1
+
+- 📦 **Bundled CLI for Faster Installs**: Sweepy is now fully bundled using esbuild, significantly reducing install size and improving startup performance. With fewer runtime dependencies, installation is faster and more reliable.
+- 🧾 **HTML & JSON Detection Added**: Sweepy now detects unused `.html`, `.htm`, and `.json` files across your entire project, even in deeply nested subfolders.
+- ⚙️ **New `--detect config`**: Detects unused or duplicate config files such as `.babelrc`, `.prettierrc`, `.editorconfig`, and all `tsconfig.*.json` variants — perfect for identifying leftovers after migrations.
+- 🧹 **Expanded `--delete` Support**: You can now safely delete unused `.html`, `.json`, and config files using `--delete`, with support for `--confirm`, `--interactive`, and `--dry-run`.
+- 🧠 **Interactive Deletion Enhanced**: Prompts are now grouped by file type (e.g. JS, CSS, HTML, JSON, Config). Easier to scan and safer to manage.
+- 📄 **Report Improvements**: HTML and text reports now include unused HTML, JSON, and config files, with clearer section titles and exportable summaries.
+
 ## v1.2.0
 
 - 🕳️ **Unused Variable Detection**: Sweepy now detects unused variable declarations (e.g. `const x = 1`) using `eslint-scope` with full block/global scope awareness. Enable it using `--detect vars`.

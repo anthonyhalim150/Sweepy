@@ -6,7 +6,7 @@ export function createSweepyCLI() {
 
   program
     .name('sweepy')
-    .description('Find unused JS/TS/CSS files and unused assets/exports in your codebase')
+    .description('Find unused codes and dependencies in your codebase')
     .usage('[options]')
     .addHelpText('beforeAll', chalk.bold.cyan(`
 ·····················································
@@ -16,8 +16,8 @@ export function createSweepyCLI() {
 :╚════██║██║███╗██║██╔══╝  ██╔══╝  ██╔═══╝   ╚██╔╝  :
 :███████║╚███╔███╔╝███████╗███████╗██║        ██║   :
 :╚══════╝ ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝        ╚═╝   :
-····················································· v1.2.0
-    `) + '\n' + chalk.gray('Find and remove unused JS, CSS, exports, and media files. Keep it clean.\n'))
+····················································· v1.2.1
+    `) + '\n' + chalk.gray('Find and remove unused JS, CSS, codes, env keys, and media files. Keep it clean.\n'))
 
   program.showHelpAfterError('(use --help to see available options)');
 

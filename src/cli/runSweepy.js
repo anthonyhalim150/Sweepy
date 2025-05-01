@@ -96,6 +96,8 @@ export async function runSweepy(options, cwd) {
   const config = loadConfig(cwd, [...(options.ignore || []), ...(rcConfig.ignore || [])])
   const onlyTypes = Array.isArray(options.only) ? options.only : []
 
+
+
   let changedFiles = null
   if (options.since) {
     changedFiles = getChangedFilesSinceCommit(options.since)
@@ -137,15 +139,11 @@ export async function runSweepy(options, cwd) {
     }
   }
   const filteredResult = onlyTypes.length > 0
-  ? filterByTypes(result, onlyTypes)
-  : result
-
+  ? filterByTypes(result, onlyTypes):result
   
 
   filteredResult.unusedDependencies = depcheckResult.unusedDependencies
   filteredResult.missingDependencies = depcheckResult.missingDependencies
-  filteredResult.unusedVars = result.unusedVars
-
 
   if (options.json) {
     printJsonReport(filteredResult)
@@ -176,12 +174,21 @@ export async function runSweepy(options, cwd) {
     return
   }
   
+  const allFiles = []
 
-  const allFiles = [
-    ...filteredResult.unusedJS,
-    ...filteredResult.unusedCSS,
-    ...filteredResult.unusedAssets
-  ]
+  if (filteredResult.unusedHTML.length)
+    allFiles.push({ separator: '📄 Unused HTML files' }, ...filteredResult.unusedHTML)
+  if (filteredResult.unusedJS.length)
+    allFiles.push({ separator: '📘 Unused JS/TS files' }, ...filteredResult.unusedJS)
+  if (filteredResult.unusedCSS.length)
+    allFiles.push({ separator: '🎨 Unused CSS/SCSS files' }, ...filteredResult.unusedCSS)
+  if (filteredResult.unusedJSON.length)
+    allFiles.push({ separator: '🗂️ Unused JSON files' }, ...filteredResult.unusedJSON)  
+  if (filteredResult.unusedAssets.length)
+    allFiles.push({ separator: '🖼️ Orphaned assets' }, ...filteredResult.unusedAssets)
+  if (filteredResult.unusedConfigs?.length)
+    allFiles.push({ separator: '⚙️ Unused or duplicate config files' }, ...filteredResult.unusedConfigs)
+  
 
   if (options.interactive && options.delete) {
     const selected = await promptFileDeletion(allFiles)

@@ -19,7 +19,6 @@ describe('filterByTypes()', () => {
     missingDependencies: [],
     unusedVars: { 'file1.js': [{ name: 'x', line: 1 }] }
   }
-
   it('filters js only', () => {
     const result = filterByTypes(baseResult, ['js'])
 
@@ -34,12 +33,13 @@ describe('filterByTypes()', () => {
 
   it('filters css only', () => {
     const result = filterByTypes(baseResult, ['css'])
-
+  
     expect(result.unusedCSS).toEqual(['style.scss'])
     expect(result.unusedCssSelectors).toEqual({ 'style.scss': ['.unused'] })
-    expect(result.unusedVars).toEqual({ 'file1.js': [{ name: 'x', line: 1 }] })
+    expect(result.unusedVars).toEqual({}) 
     expect(result.unusedEnv).toBe(null)
   })
+  
 
   it('filters all types', () => {
     const result = filterByTypes(baseResult, ['js', 'css', 'png', 'env'])

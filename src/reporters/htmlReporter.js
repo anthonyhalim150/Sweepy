@@ -3,15 +3,17 @@ import path from 'path'
 
 export function generateHtmlReport(result, outputPath = 'sweepy-report.html') {
   const {
+    unusedHTML = [],
     unusedJS = [],
     unusedCSS = [],
+    unusedJSON = [],
     unusedAssets = [],
     unusedExports = {},
     unusedCssSelectors = {},
     unusedEnv = {},
     unusedDependencies = [],
     missingDependencies = [],
-    unresolvedDependencies = [],
+    unusedConfigs = [],
     deadAliases = {},
     unusedVars = {}
   } = result
@@ -102,16 +104,17 @@ export function generateHtmlReport(result, outputPath = 'sweepy-report.html') {
 </head>
 <body>
   <h1>🧹 Sweepy Report</h1>
-
+  ${section('📄 Unused HTML Files', unusedHTML)}
   ${section('🧠 Unused JS/TS Files', unusedJS)}
   ${section('🎨 Unused CSS/SCSS Files', unusedCSS)}
+  ${section('🗂️ Unused JSON Files', unusedJSON)}
   ${section('🖼️ Orphaned Assets', unusedAssets)}
   ${nestedSection('📤 Unused Exports', unusedExports)}
   ${nestedSection('🧷 Unused CSS Selectors', unusedCssSelectors)}
   ${section('🔐 Unused .env Keys', unusedEnv?.unused || [])}
   ${section('📦 Unused Dependencies', unusedDependencies)}
   ${section('❗ Missing (Used but Not Declared) Dependencies', missingDependencies)}
-  ${section('🚧 Unresolved Dependencies', unresolvedDependencies)}
+  ${section('⚙️ Unused or Duplicate Config Files', unusedConfigs)}
   ${nestedSection(
     '🧭 Dead Alias Paths',
     Object.fromEntries(

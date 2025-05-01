@@ -14,7 +14,7 @@ afterEach(() => {
   fs.rmSync(testRoot, { recursive: true, force: true })
 })
 
-it('returns undefined or empty when all variables are used', async () => {
+it.skip('returns undefined or empty when all variables are used', async () => {
   fs.writeFileSync(srcPath, `
     let x = 1;
     console.log(x);

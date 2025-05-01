@@ -11,8 +11,13 @@ import { loadConfig } from '../config/config.js'
 import { detectUnusedEnvKeys } from '../utils/detectUnusedEnvKeys.js'
 import { detectDeadAliases } from '../utils/detectDeadAliases.js'
 import { detectUnusedVariables } from '../utils/detectUnusedVariables.js'
+import { detectUnusedHtmlFiles } from '../utils/detectUnusedHtmlFiles.js'
+import { detectUnusedJsonFiles } from '../utils/detectUnusedJsonFiles.js'
+import { detectUnusedConfigs } from '../utils/detectUnusedConfigs.js'
 
-const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps', 'alias', 'vars']
+
+
+const validDetectTypes = ['js', 'css', 'assets', 'exports', 'env', 'deps', 'alias', 'vars', 'html', 'json', 'config']
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -35,6 +40,7 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
 
   const allJS = await globby(['**/*.{js,ts,jsx,tsx}'], globbyOpts)
   const allCSS = await globby(['**/*.{css,scss}'], globbyOpts)
+  const allJsonFiles = await globby(['**/*.json'], globbyOpts)
   const allAssets = await globby(['**/*.{png,jpg,jpeg,gif,svg,webp}'], globbyOpts)
   const contentFiles = await globby(['**/*.{js,ts,tsx,jsx,html,htm,css,scss}'], globbyOpts)
 
@@ -62,10 +68,12 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
       contentMap.set(file, fs.readFileSync(file, 'utf-8'))
     } catch {}
   }
-
+  const unusedHTML = detect('html') ? await detectUnusedHtmlFiles(projectDir, contentMap, ignorePatterns) : []
+  const unusedJSON = detect('json') ? await detectUnusedJsonFiles(projectDir, contentMap, ignorePatterns) : []
   const unusedExports = detect('exports') ? detectUnusedExports(jsFiles) : {}
   const unusedEnv = detect('env') ? await detectUnusedEnvKeys(projectDir, ignorePatterns) : null
   const unusedCssSelectors = detect('css') ? await detectUnusedCssSelectors(cssFiles, contentMap, customMatchers, customCssSafelist) : {}
+  const unusedConfigs = detect('config') ? await detectUnusedConfigs(projectDir, contentMap, ignorePatterns) : []
   const deadAliases = detect('alias') ? detectDeadAliases(projectDir) : {}
   const unusedVars = detect('vars') ? detectUnusedVariables(jsFiles) : {}
 
@@ -111,8 +119,10 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
     }
 
     console.log('\n📊 File Summary:')
+    console.log(`  • HTML files: ${contentScanFiles.filter(f => f.endsWith('.html') || f.endsWith('.htm')).length}`)
     console.log(`  • JS/TS files: ${jsFiles.length}`)
     console.log(`  • CSS/SCSS files: ${cssFiles.length}`)
+    console.log(`  • JSON files: ${allJsonFiles.length}`)
     console.log(`  • Asset files: ${assetFiles.length}`)
     console.log(`  • Content files scanned: ${contentScanFiles.length}`)
     console.log(`  • Static imports: ${staticUsed.size}`)
@@ -125,12 +135,15 @@ export async function findUnusedFiles(projectDir, ignorePatterns = [], verbose =
   }
 
   return {
+    unusedHTML,
     unusedJS,
     unusedCSS,
+    unusedJSON,
     unusedAssets,
     unusedExports,
     unusedCssSelectors,
     unusedEnv,
+    unusedConfigs,
     deadAliases,
     unusedVars
   }

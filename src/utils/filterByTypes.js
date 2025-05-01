@@ -45,15 +45,18 @@ export function filterByTypes(result, extensions) {
   }
 
   return {
+    unusedHTML: filterByFile(result.unusedHTML),
     unusedJS: filterByFile(result.unusedJS),
     unusedCSS: filterByFile(result.unusedCSS),
+    unusedJSON: filterByFile(result.unusedJSON),
     unusedAssets: filterByFile(result.unusedAssets),
     unusedExports: filterByFileKeys(result.unusedExports),
     unusedCssSelectors: filterByFileKeys(result.unusedCssSelectors),
     unusedEnv: exts.has('env') ? result.unusedEnv : null,
     deadAliases: filterAliasTargets(result.deadAliases),
+    unusedConfigs: exts.has('config') ? result.unusedConfigs : [],
     unusedDependencies: result.unusedDependencies || [],
     missingDependencies: result.missingDependencies || [],
-    unusedVars: result.unusedVars || {}
+    unusedVars: filterByFileKeys(result.unusedVars)
   }
 }

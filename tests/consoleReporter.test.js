@@ -14,6 +14,8 @@ describe('consoleReporter', () => {
 
   it('prints a clean message when no unused files exist', () => {
     printReport({
+      unusedHTML: [],
+      unusedJSON: [],
       unusedJS: [],
       unusedCSS: [],
       unusedAssets: [],
@@ -23,13 +25,16 @@ describe('consoleReporter', () => {
       unusedDependencies: [],
       missingDependencies: [],
       deadAliases: {},
-      unusedVars: {}
+      unusedVars: {},
+      unusedConfigs: []
     })
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/sweepy clean/i))
   })
 
   it('prints all main report sections when unused data exists', () => {
     printReport({
+      unusedHTML: ['page.html'],
+      unusedJSON: ['data.json'],
       unusedJS: ['file1.js'],
       unusedCSS: ['file2.css'],
       unusedAssets: ['img.png'],
@@ -39,9 +44,12 @@ describe('consoleReporter', () => {
       unusedDependencies: ['lodash'],
       missingDependencies: ['chalk'],
       deadAliases: {},
-      unusedVars: {}
+      unusedVars: {},
+      unusedConfigs: ['tsconfig.test.json']
     })
 
+    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused HTML files/))
+    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused JSON files/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused JS\/TS files/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused CSS\/SCSS files/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Orphaned assets/))
@@ -50,10 +58,13 @@ describe('consoleReporter', () => {
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused \.env Keys/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused npm dependencies/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Missing.*dependencies/))
+    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused or duplicate config files/))
   })
 
   it('prints dead aliases and unused vars (lines 82–98)', () => {
     printReport({
+      unusedHTML: [],
+      unusedJSON: [],
       unusedJS: [],
       unusedCSS: [],
       unusedAssets: [],
@@ -70,11 +81,12 @@ describe('consoleReporter', () => {
           { name: 'temp', line: 10 },
           { name: '', line: null }
         ]
-      }
+      },
+      unusedConfigs: []
     })
 
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Dead Alias Paths/))
-    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/@alias → .\/not-found.js/))
+    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/@alias → \.\/not-found.js/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/Unused Variables/))
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('temp (line 10)'))
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-'))

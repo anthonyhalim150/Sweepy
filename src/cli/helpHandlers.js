@@ -181,14 +181,17 @@ function printDetectHelp() {
 
 Choose specific detection categories to run:
 
-  js       → Unused JS/TS modules
+  html     → Unused .html and .htm files
+  js       → Unused JS/TS files
   css      → Unused CSS/SCSS files and selectors
+  json     → Unused .json files (not imported or required in JS/TS)
   assets   → Unused media assets (.png, .svg, etc.)
   exports  → Unused exported symbols in modules
   env      → Unused .env keys
   deps     → Unused or undeclared npm dependencies (from package.json)
   alias    → Dead or misconfigured alias paths (tsconfig, webpack, babel, vite)
   vars     → Unused local variables and function parameters
+  config   → Unused or duplicate config files (.babelrc, tsconfig.*, etc)
 
 
 By default, Sweepy runs all detectors.

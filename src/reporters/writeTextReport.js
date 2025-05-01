@@ -3,6 +3,13 @@ import fs from 'fs'
 export function writeTextReport(result, outputPath) {
   const lines = []
 
+  if (result.unusedHTML?.length) {
+    lines.push('📄 Unused HTML files:')
+    result.unusedHTML.forEach(f => lines.push(`  • ${f}`))
+    lines.push('')
+  }
+  
+
 
   if (result.unusedJS?.length) {
     lines.push('📘 Unused JS/TS files:')
@@ -10,13 +17,17 @@ export function writeTextReport(result, outputPath) {
     lines.push('')
   }
 
-
   if (result.unusedCSS?.length) {
     lines.push('🎨 Unused CSS/SCSS files:')
     result.unusedCSS.forEach(f => lines.push(`  • ${f}`))
     lines.push('')
   }
 
+  if (result.unusedJSON?.length) {
+    lines.push('🗂️ Unused JSON files:')
+    result.unusedJSON.forEach(f => lines.push(`  • ${f}`))
+    lines.push('')
+  }
   
   if (result.unusedAssets?.length) {
     lines.push('🖼️ Orphaned assets:')
@@ -67,6 +78,12 @@ export function writeTextReport(result, outputPath) {
     result.missingDependencies.forEach(dep => lines.push(`  • ${dep}`))
     lines.push('')
   }
+
+  if (result.unusedConfigs?.length) {
+    lines.push('⚙️ Unused or duplicate config files:')
+    result.unusedConfigs.forEach(f => lines.push(`  • ${f}`))
+    lines.push('')
+  }  
 
 
   if (result.deadAliases && Object.keys(result.deadAliases).length > 0) {
