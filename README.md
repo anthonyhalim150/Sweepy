@@ -331,3 +331,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## 🔗 More Projects by me :D
+
+Looking for more developer tools and AI productivity projects? Check out these:
+
+### 🚀 [OrionAI](https://www.orionai.asia) - Your All-in-one AI Chatbot for Projects  
+An all-in-one ChatGPT alternative designed for developers, students, and teams. OrionAI features persistent project memory, GitHub sync, file uploads, custom AI modes, and voice support — all with top-tier models like GPT-4.1 and Gemini 2.5.  
+→ Try it free at [https://www.orionai.asia](https://www.orionai.asia)
