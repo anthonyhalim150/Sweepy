@@ -1,6 +1,6 @@
 {
   "name": "sweepy",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "All-in-one CLI tool to find and clean unused code, files, dependencies, assets, exports, envs, and more",
   "bin": {
     "sweepy": "./dist/sweepy.cjs"

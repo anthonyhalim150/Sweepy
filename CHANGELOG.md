@@ -1,6 +1,6 @@
 # 📦 Changelog
 
-## v1.2.1
+## v1.2.1-v1.2.2
 
 - 📦 **Bundled CLI for Faster Installs**: Sweepy is now fully bundled using esbuild, significantly reducing install size and improving startup performance. With fewer runtime dependencies, installation is faster and more reliable.
 - 🧾 **HTML & JSON Detection Added**: Sweepy now detects unused `.html`, `.htm`, and `.json` files across your entire project, even in deeply nested subfolders.
